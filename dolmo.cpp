@@ -13,9 +13,19 @@ Node*  current_node = nullptr;
 
 
 void
+process_button(const SDL_MouseButtonEvent&  evt)
+{
+  current_node = screen::get(evt.x,evt.y);
+}
+
+
+void
 process_motion(const SDL_MouseMotionEvent&  evt)
 {
-  current_node->change_angle(evt.x,evt.y);
+    if(current_node)
+    {
+      current_node->change_angle(evt.x,evt.y);
+    }
 }
 
 
@@ -44,18 +54,15 @@ int
 main(int  argc, char**  argv)
 {
   screen::open();
-  image::open("parts.png");
+  image::open("dolmo_parts.png");
 
 
-  root_node = new Node(Rect(0,0,80,80),Point(100,100),Point(30,80));
+  root_node = new Node(200,200);
 
-  current_node = root_node;
 
-/*
-  auto  child = new Node(Rect(48,0,48,48),Point(0,0),Point(0,0));
-
-  root_node->join(child,48,48);
-*/
+  auto   head = root_node->join(new Node("頭部",0,Rect(   0, 0,80,80),Point(30,80)), 0,  0);
+  auto   bust = root_node->join(new Node("胸部",0,Rect(   0,80,80,80),Point(30, 0)), 0,  0);
+  auto  waist =      bust->join(new Node("腰部",0,Rect(80*4,60,80,80),Point(50, 0)),10, 70);
 
   root_node->update();
 
@@ -68,6 +75,21 @@ main(int  argc, char**  argv)
         {
             switch(evt.type)
             {
+          case(SDL_DROPFILE):
+              SDL_free(evt.drop.file);
+              break;
+          case(SDL_WINDOWEVENT):
+                if(evt.window.event == SDL_WINDOWEVENT_EXPOSED)
+                {
+                  Node::needed_to_redraw = true;
+                }
+              break;
+          case(SDL_MOUSEBUTTONDOWN):
+              process_button(evt.button);
+              break;
+          case(SDL_MOUSEBUTTONUP):
+              current_node = nullptr;
+              break;
           case(SDL_MOUSEMOTION):
               process_motion(evt.motion);
               break;
@@ -75,9 +97,11 @@ main(int  argc, char**  argv)
                 switch(evt.key.keysym.sym)
                 {
               case(SDLK_LEFT):
+                  root_node->own_radian -= 0.1;
                   root_node->update();
                   break;
               case(SDLK_RIGHT):
+                  root_node->own_radian += 0.1;
                   root_node->update();
                   break;
                 }

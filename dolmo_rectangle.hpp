@@ -14,7 +14,17 @@ Point
   x(x_), y(y_){}
 
 
-  void  transform(double  radian, const Point&  center);
+  Point  transform(double  radian, const Point&  center) const;
+
+  void  assign(int  x_, int  y_);
+
+  Point  operator+(const Point&  rhs) const;
+  Point  operator-(const Point&  rhs) const;
+
+  Point&  operator+=(const Point&  rhs);
+  Point&  operator-=(const Point&  rhs);
+
+  void  print(const char*  s="") const;
 
 };
 

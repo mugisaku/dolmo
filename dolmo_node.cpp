@@ -18,18 +18,29 @@ needed_to_redraw;
 
 
 Node::
-Node(Rect&&  rect, Point&&  offset_, Point&&  center_):
+Node(int  x, int  y):
+name("root"),
+z_value(0),
 parent(nullptr),
-image_rect(rect),
-raw_offset(offset_),
-raw_center(center_),
-raw_radian(0.0)
+base_offset(x,y),
+own_radian(0.0)
+{}
+
+
+Node::
+Node(const char*  name_, int  z, Rect&&  img_rect, Point&&  img_center_):
+name(name_),
+z_value(z),
+parent(nullptr),
+image_rect(img_rect),
+image_center(img_center_),
+own_radian(0.0)
 {}
 
 
 
 
-void
+Node*
 Node::
 join(Node*  child, int  x, int  y)
 {
@@ -37,10 +48,12 @@ join(Node*  child, int  x, int  y)
 
   children.emplace_back(child);
 
-  child->raw_offset.x = x;
-  child->raw_offset.y = y;
+  child->base_offset.assign(x,y);
 
   child->update();
+
+
+  return child;
 }
 
 
@@ -48,21 +61,12 @@ void
 Node::
 change_angle(int  x, int  y)
 {
-  y = -y+(transformed_center.y);
-  x =  x-(transformed_center.x);
+  y = -y+(graph_center.y);
+  x =  x-(graph_center.x);
 
     if(x || y)
     {
-      raw_radian = -std::atan2(y,x);
-
-        if(raw_radian < 0)
-        {
-//          raw_radian += (pi*2);
-        }
-
-
-//      raw_radian += (pi/2);
-
+      own_radian = -std::atan2(y,x);
 
       update();
     }
@@ -75,77 +79,27 @@ update()
 {
   needed_to_redraw = true;
 
-  transformed_offset.x = raw_offset.x;
-  transformed_offset.y = raw_offset.y;
-  transformed_radian   = raw_radian;
-
     if(parent)
     {
-      transformed_offset.x += parent->transformed_offset.x;
-      transformed_offset.y += parent->transformed_offset.y;
-      transformed_radian   += parent->transformed_radian;
+      const auto&  r = parent->total_radian;
+      const auto&  c = parent->graph_center;
+
+      total_radian = r+own_radian;
+
+      graph_center = (c+base_offset).transform(r,c);
     }
 
   else
     {
+      total_radian =  own_radian;
+      graph_center = base_offset;
     }
 
-
-  transformed_center.x = transformed_offset.x+raw_center.x;
-  transformed_center.y = transformed_offset.y+raw_center.y;
-
-//  transformed_offset.transform(transformed_radian,transformed_center);
-
-//    center_result.transform(radian_result,center_result);
 
     for(auto  child: children)
     {
       child->update();
     }
-}
-
-
-bool
-Node::
-scan(int  x, int  y)
-{
-/*
-    if((x >= (base_result.x-circle_radius)) &&
-       (y >= (base_result.y-circle_radius)) &&
-       (x <  (base_result.x+circle_radius)) &&
-       (y <  (base_result.y+circle_radius)))
-    {
-      needed_to_redraw = true;
-
-      current_node = this;
-
-      return true;
-    }
-
-  else
-    if((x >= (tail_result.x-(square_size/2))) &&
-       (y >= (tail_result.y-(square_size/2))) &&
-       (x <  (tail_result.x+(square_size/2))) &&
-       (y <  (tail_result.y+(square_size/2))))
-    {
-      needed_to_redraw = true;
-
-      current_node = this;
-
-      return true;
-    }
-*/
-
-    for(auto  child: children)
-    {
-        if(child->scan(x,y))
-        {
-          return true;
-        }
-    }
-
-
-  return false;
 }
 
 
@@ -162,8 +116,8 @@ render_center()
 
             if(i)
             {
-              screen::put(transformed_center.x-circle_radius+x,
-                          transformed_center.y-circle_radius+y,0,i,this);
+              screen::put(graph_center.x-circle_radius+x,
+                          graph_center.y-circle_radius+y,0,i,this);
             }
         }
     }
@@ -174,29 +128,41 @@ void
 Node::
 render_image()
 {
+print();
   const int      image_size = std::max(image_rect.w,image_rect.h);
   const int  rendering_size = image_size*2;
+
+  const Point  rendering_base = (graph_center-image_center);
 
     for(int  y = -image_size;  y < rendering_size;  ++y)
     {
         for(int  x = -image_size;  x < rendering_size;  ++x)
         {
-          Point  pt(x,y);
+          const int  dst_x = (rendering_base.x+x);
+          const int  dst_y = (rendering_base.y+y);
 
-          pt.transform(-transformed_radian,raw_center);
-
-            if((pt.x >=            0) &&
-               (pt.y >=            0) &&
-               (pt.x <  image_rect.w) &&
-               (pt.y <  image_rect.h))
+            if((dst_x >=              0) &&
+               (dst_y >=              0) &&
+               (dst_x <  screen::width ) &&
+               (dst_y <  screen::height))
             {
-              auto  i = image::get(image_rect.x+pt.x,
-                                   image_rect.y+pt.y);
+              Point  pt(x,y);
 
-                if(i)
+              pt = pt.transform(-total_radian,image_center);
+
+                if((pt.x >=            0) &&
+                   (pt.y >=            0) &&
+                   (pt.x <  image_rect.w) &&
+                   (pt.y <  image_rect.h))
                 {
-                  screen::put(transformed_offset.x+x,
-                              transformed_offset.y+y,0,i,this);
+                  auto  i = image::get(image_rect.x+pt.x,
+                                       image_rect.y+pt.y);
+
+                    if(i)
+                    {
+                      screen::put(dst_x,
+                                  dst_y,z_value,i,this);
+                    }
                 }
             }
         }
@@ -208,7 +174,12 @@ void
 Node::
 render()
 {
-  render_center();
+    if(parent)
+    {
+      render_center();
+    }
+
+
   render_image();
 
     for(auto  child: children)
@@ -217,6 +188,24 @@ render()
     }
 }
 
+
+
+
+void
+Node::
+print() const
+{
+  printf("%s{\n",name);
+
+  base_offset.print( " base offset");
+  image_center.print("image center");
+  graph_center.print("graph center");
+
+  printf("  own radian %f\n",own_radian);
+  printf("total radian %f\n",total_radian);
+
+  printf("}\n");
+}
 
 
 

@@ -102,6 +102,13 @@ put(int  x, int  y, int  z, int  color_index, Node*  nodeptr)
 }
 
 
+Node*
+get(int  x, int  y)
+{
+  return table[y][x].nodeptr;
+}
+
+
 void
 update()
 {

@@ -32,34 +32,39 @@ Node
 {
   static bool  needed_to_redraw;
 
+  const char*  name;
+
+  int  z_value;
+
   Node*                 parent;
   std::vector<Node*>  children;
 
   Rect  image_rect;
 
-  Point          raw_offset;//
-  Point  transformed_offset;//
-  Point          raw_center;//
-  Point  transformed_center;//
+  Point  image_center;//
+  Point  graph_center;//
 
-  double          raw_radian;//角度
-  double  transformed_radian;//合成角度。自身の角度と親ノードの合成角度を合わせたもの
+  Point  base_offset;//
 
-
-  Node(Rect&&  rect, Point&&  offset_, Point&&  center_);
+  double    own_radian;//角度
+  double  total_radian;//合計角度。自身の角度と親ノードの合計角度を合わせたもの
 
 
-  void  join(Node*  child, int  x, int  y);
+  Node(int  x, int  y);
+  Node(const char*  name_, int  z, Rect&&  img_rect, Point&&  img_center_);
+
+
+  Node*  join(Node*  child, int  x, int  y);
 
   void  change_angle(int  x, int  y);
 
   void  update();
 
-  bool  scan(int  x, int  y);
-
   void  render_center();
   void  render_image();
   void  render();
+
+  void  print() const;
 
 };
 
