@@ -20,6 +20,7 @@ needed_to_redraw;
 Node::
 Node(int  x, int  y):
 name("root"),
+joining_kind(JoiningKind::none),
 z_value(0),
 parent(nullptr),
 base_offset(x,y),
@@ -30,6 +31,7 @@ own_radian(0.0)
 Node::
 Node(const char*  name_, int  z, Rect&&  img_rect, Point&&  img_center_):
 name(name_),
+joining_kind(JoiningKind::none),
 z_value(z),
 parent(nullptr),
 image_rect(img_rect),
@@ -42,11 +44,13 @@ own_radian(0.0)
 
 Node*
 Node::
-join(Node*  child, int  x, int  y)
+join(Node*  child, int  x, int  y, JoiningKind  jk)
 {
   child->parent = this;
 
   children.emplace_back(child);
+
+  child->joining_kind = jk;
 
   child->base_offset.assign(x,y);
 
@@ -66,9 +70,27 @@ change_angle(int  x, int  y)
 
     if(x || y)
     {
-      own_radian = -std::atan2(y,x);
+      auto  r = -std::atan2(static_cast<double>(y),static_cast<double>(x));
 
-      own_radian -= pi*2;
+        switch(joining_kind)
+        {
+      case(JoiningKind::upward):
+          r += (pi*2)+((pi/2)*1);
+          break;
+      case(JoiningKind::downward):
+          r += (pi*2)+((pi/2)*3);
+          break;
+      default:;
+        }
+
+
+      own_radian = r;
+
+        if(parent)
+        {
+          own_radian -= parent->total_radian;
+        }
+
 
       update();
     }

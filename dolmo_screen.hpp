@@ -11,8 +11,8 @@ struct Node;
 namespace screen{
 
 
-constexpr int  width  = 600;
-constexpr int  height = 600;
+constexpr int  width  = 500;
+constexpr int  height = 640;
 
 
 void   open();

@@ -95,10 +95,10 @@ main(int  argc, char**  argv)
   image::open("dolmo_parts.png");
 
 
-  root_node = new Node(200,200);
+  root_node = new Node(screen::width/2,screen::width/2);
 
 
-  auto   head = root_node->join(new Node("頭部",0,Rect(   0, 0,80,80),Point(30,80)), 0,  0);
+  auto   head = root_node->join(new Node("頭部",0,Rect(   0, 0,80,80),Point(30,80)), 0,  0,JoiningKind::upward);
   auto   bust = root_node->join(new Node("胸部",0,Rect(   0,80,80,80),Point(30, 0)), 0,  0);
   auto  waist =      bust->join(new Node("腰部",0,Rect(80*4,60,80,80),Point(50, 0)),10, 70);
 
@@ -107,9 +107,9 @@ main(int  argc, char**  argv)
   auto  l_shin  = l_thigh->join(new Node(  "左脛",-1,Rect(80*3,0,80,100),Point(40,10)),-10, 70);
   auto  l_foot  =  l_shin->join(new Node(  "左足",-1,Rect(80*4,0,80, 40),Point(30, 0)),  0, 80);
 
-  auto  r_thigh =   waist->join(new Node("右大腿",-1,Rect(80*2,0,80,100),Point(40,10)),-10, 60);
-  auto  r_shin  = r_thigh->join(new Node(  "右脛",-1,Rect(80*3,0,80,100),Point(40,10)),-10, 70);
-  auto  r_foot  =  r_shin->join(new Node(  "右足",-1,Rect(80*4,0,80, 40),Point(30, 0)),  0, 80);
+  auto  r_thigh =   waist->join(new Node("右大腿",1,Rect(80*2,0,80,100),Point(40,10)),-10, 60);
+  auto  r_shin  = r_thigh->join(new Node(  "右脛",1,Rect(80*3,0,80,100),Point(40,10)),-10, 70);
+  auto  r_foot  =  r_shin->join(new Node(  "右足",1,Rect(80*4,0,80, 40),Point(30, 0)),  0, 80);
 
   l_thigh->own_radian =  15*pi/180;
   r_thigh->own_radian = -15*pi/180;

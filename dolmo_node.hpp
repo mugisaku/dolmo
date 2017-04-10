@@ -27,6 +27,18 @@ constexpr int  square_size   = 16;
 constexpr double  pi = 3.14159265358979323846264338327950288;
 
 
+enum class
+JoiningKind
+{
+  none,
+  upward,
+  downward,
+  to_left,
+  to_right,
+
+};
+
+
 struct
 Node
 {
@@ -35,6 +47,8 @@ Node
   const char*  name;
 
   int  z_value;
+
+  JoiningKind  joining_kind;
 
   Node*                 parent;
   std::vector<Node*>  children;
@@ -54,7 +68,7 @@ Node
   Node(const char*  name_, int  z, Rect&&  img_rect, Point&&  img_center_);
 
 
-  Node*  join(Node*  child, int  x, int  y);
+  Node*  join(Node*  child, int  x, int  y, JoiningKind  jk=JoiningKind::downward);
 
   void  change_angle(int  x, int  y);
 
