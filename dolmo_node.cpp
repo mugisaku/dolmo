@@ -68,6 +68,8 @@ change_angle(int  x, int  y)
     {
       own_radian = -std::atan2(y,x);
 
+      own_radian -= pi*2;
+
       update();
     }
 }
@@ -128,7 +130,6 @@ void
 Node::
 render_image()
 {
-print();
   const int      image_size = std::max(image_rect.w,image_rect.h);
   const int  rendering_size = image_size*2;
 
@@ -174,13 +175,13 @@ void
 Node::
 render()
 {
+  render_image();
+
     if(parent)
     {
       render_center();
     }
 
-
-  render_image();
 
     for(auto  child: children)
     {
@@ -189,6 +190,58 @@ render()
 }
 
 
+
+
+const char*
+Node::
+sscan(const char*  s)
+{
+  int  d;
+  int  sz;
+  int  n;
+
+    if(sscanf(s," %d , %d , %n",&d,&sz,&n) >= 2)
+    {
+        if(sz != children.size())
+        {
+          return nullptr;
+        }
+
+
+      own_radian = d*pi/180;
+
+      s += n;
+
+        for(auto  child: children)
+        {
+          s = child->sscan(s);
+
+            if(!s)
+            {
+              break;
+            }
+        }
+
+
+      return s;
+    }
+
+
+  return nullptr;
+}
+
+
+void
+Node::
+fprint(FILE*  f) const
+{
+  fprintf(f,"%d,%d,",static_cast<int>(own_radian*180/pi),children.size());
+
+    for(auto  child: children)
+    {
+      child->fprint(f);
+    }
+}
 
 
 void

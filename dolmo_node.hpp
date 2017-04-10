@@ -39,12 +39,12 @@ Node
   Node*                 parent;
   std::vector<Node*>  children;
 
-  Rect  image_rect;
+  Rect  image_rect;//このノードが使用する描画元像画像領域
 
-  Point  image_center;//
-  Point  graph_center;//
+  Point  image_center;//描画元画像を回転処理するときの中心位置。値は、image_rectからの相対位置
+  Point  graph_center;//描画先画像の中心位置。値は、スクリーン上の絶対位置
 
-  Point  base_offset;//
+  Point  base_offset;//親ノードからの相対位置
 
   double    own_radian;//角度
   double  total_radian;//合計角度。自身の角度と親ノードの合計角度を合わせたもの
@@ -63,6 +63,9 @@ Node
   void  render_center();
   void  render_image();
   void  render();
+
+  const char*   sscan(const char*  s);
+  void  fprint(FILE*  f) const;
 
   void  print() const;
 
