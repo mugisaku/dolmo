@@ -20,7 +20,8 @@ void  close();
 
 void  clear();
 
-void   put(int  x, int  y, int  z, int  color_index, Node*  nodeptr);
+void   put(int  cur, int  max, int  x, int  y);
+void   put(int  color_index, Node*  nodeptr, int  x, int  y);
 Node*  get(int  x, int  y);
 
 void  update();

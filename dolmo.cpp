@@ -1,6 +1,8 @@
 #include"dolmo_node.hpp"
 #include"dolmo_screen.hpp"
 #include"dolmo_image.hpp"
+#include<list>
+#include<vector>
 
 
 
@@ -8,8 +10,37 @@
 namespace{
 
 
-Node*     root_node = nullptr;
 Node*  current_node = nullptr;
+
+
+int
+current_index;
+
+
+std::list<Node*>
+root_list;
+
+
+std::list<Node*>::iterator
+current_root;
+
+
+std::list<Node*>::const_iterator
+current_frame;
+
+
+std::vector<Node*>
+stock;
+
+
+Node*
+model;
+
+
+bool
+needed_to_redraw = true;
+
+
 
 
 void
@@ -25,6 +56,8 @@ process_motion(const SDL_MouseMotionEvent&  evt)
     if(current_node)
     {
       current_node->change_angle(evt.x,evt.y);
+
+      needed_to_redraw = true;
     }
 }
 
@@ -32,15 +65,17 @@ process_motion(const SDL_MouseMotionEvent&  evt)
 void
 render()
 {
-    if(Node::needed_to_redraw)
+    if(needed_to_redraw)
     {
       screen::clear();
 
-      root_node->render();
+      (*current_root)->render();
+
+      screen::put(current_index+1,root_list.size(),0,0);
 
       screen::update();
 
-      Node::needed_to_redraw = false;
+      needed_to_redraw = false;
     }
 }
 
@@ -72,9 +107,9 @@ load(char*  path)
 
       fclose(f);
 
-        if(root_node->sscan(buf))
+        if((*current_root)->sscan(buf))
         {
-          root_node->update();
+          (*current_root)->update();
         }
     }
 
@@ -83,24 +118,14 @@ load(char*  path)
 }
 
 
-}
-
-
-
-
-int
-main(int  argc, char**  argv)
+Node*
+create_model()
 {
-  screen::open();
-  image::open("dolmo_parts.png");
+  auto  root = new Node(screen::width/2,screen::width/2);
 
-
-  root_node = new Node(screen::width/2,screen::width/2);
-
-
-  auto   head = root_node->join(new Node("頭部",0,Rect(   0, 0,80,80),Point(30,80)), 0,  0,JoiningKind::upward);
-  auto   bust = root_node->join(new Node("胸部",0,Rect(   0,80,80,80),Point(30, 0)), 0,  0);
-  auto  waist =      bust->join(new Node("腰部",0,Rect(80*4,60,80,80),Point(50, 0)),10, 70);
+  auto   head = root->join(new Node("頭部",0,Rect(   0, 0,80,80),Point(30,80)), 0,  0,JoiningKind::upward);
+  auto   bust = root->join(new Node("胸部",0,Rect(   0,80,80,80),Point(30, 0)), 0,  0);
+  auto  waist = bust->join(new Node("腰部",0,Rect(80*4,60,80,80),Point(50, 0)),10, 70);
 
 
   auto  l_thigh =   waist->join(new Node("左大腿",-1,Rect(80*2,0,80,100),Point(40,10)),-10, 60);
@@ -127,7 +152,29 @@ main(int  argc, char**  argv)
   r_upperarm->own_radian = -15*pi/180;
 
 
-  root_node->update();
+  return root;
+}
+
+
+}
+
+
+
+
+int
+main(int  argc, char**  argv)
+{
+  screen::open();
+  image::open("dolmo_parts.png");
+
+
+  model = create_model();
+
+  root_list.emplace_back(new Node(*model));
+
+  current_root = root_list.begin();
+
+  (*current_root)->update();
 
 
   static SDL_Event  evt;
@@ -144,7 +191,7 @@ main(int  argc, char**  argv)
           case(SDL_WINDOWEVENT):
                 if(evt.window.event == SDL_WINDOWEVENT_EXPOSED)
                 {
-                  Node::needed_to_redraw = true;
+                  needed_to_redraw = true;
                 }
               break;
           case(SDL_MOUSEBUTTONDOWN):
@@ -160,15 +207,13 @@ main(int  argc, char**  argv)
                 switch(evt.key.keysym.sym)
                 {
               case(SDLK_LEFT):
-                  root_node->own_radian -= 0.1;
-                  root_node->update();
                   break;
               case(SDLK_RIGHT):
-                  root_node->own_radian += 0.1;
-                  root_node->update();
+                  ++current_index;
+                  needed_to_redraw = true;
                   break;
               case(SDLK_SPACE):
-                  root_node->fprint(stdout);
+                  (*current_root)->fprint(stdout);
                   fputc('\n',stdout);
                   fflush(stdout);
                   break;

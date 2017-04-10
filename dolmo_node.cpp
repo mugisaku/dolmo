@@ -10,11 +10,6 @@ int
 reporting_count;
 
 
-bool
-Node::
-needed_to_redraw;
-
-
 
 
 Node::
@@ -40,6 +35,39 @@ own_radian(0.0)
 {}
 
 
+Node::
+Node(const Node&  rhs) noexcept:
+name(rhs.name),
+joining_kind(rhs.joining_kind),
+z_value(rhs.z_value),
+parent(rhs.parent),
+image_rect(rhs.image_rect),
+image_center(rhs.image_center),
+own_radian(rhs.own_radian),
+base_offset(rhs.base_offset)
+{
+    for(auto  child: rhs.children)
+    {
+      join(new Node(*child));
+    }
+}
+
+
+
+
+Node*
+Node::
+join(Node*  child)
+{
+  child->parent = this;
+
+  children.emplace_back(child);
+
+  child->update();
+
+
+  return child;
+}
 
 
 Node*
@@ -59,6 +87,8 @@ join(Node*  child, int  x, int  y, JoiningKind  jk)
 
   return child;
 }
+
+
 
 
 void
@@ -101,8 +131,6 @@ void
 Node::
 update()
 {
-  needed_to_redraw = true;
-
     if(parent)
     {
       const auto&  r = parent->total_radian;
@@ -140,8 +168,8 @@ render_center()
 
             if(i)
             {
-              screen::put(graph_center.x-circle_radius+x,
-                          graph_center.y-circle_radius+y,0,i,this);
+              screen::put(i,this,graph_center.x-circle_radius+x,
+                                 graph_center.y-circle_radius+y);
             }
         }
     }
@@ -183,8 +211,8 @@ render_image()
 
                     if(i)
                     {
-                      screen::put(dst_x,
-                                  dst_y,z_value,i,this);
+                      screen::put(i,this,dst_x,
+                                         dst_y);
                     }
                 }
             }

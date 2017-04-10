@@ -21,7 +21,6 @@ extern int  reporting_count;
 struct Node;
 
 constexpr int  circle_radius = 12;
-constexpr int  square_size   = 16;
 
 
 constexpr double  pi = 3.14159265358979323846264338327950288;
@@ -42,8 +41,6 @@ JoiningKind
 struct
 Node
 {
-  static bool  needed_to_redraw;
-
   const char*  name;
 
   int  z_value;
@@ -66,8 +63,10 @@ Node
 
   Node(int  x, int  y);
   Node(const char*  name_, int  z, Rect&&  img_rect, Point&&  img_center_);
+  Node(const Node&  rhs) noexcept;
 
 
+  Node*  join(Node*  child                                                       );
   Node*  join(Node*  child, int  x, int  y, JoiningKind  jk=JoiningKind::downward);
 
   void  change_angle(int  x, int  y);
