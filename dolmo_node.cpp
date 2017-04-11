@@ -93,14 +93,15 @@ join(Node*  child, int  x, int  y, JoiningKind  jk)
 
 void
 Node::
-change_angle(int  x, int  y)
+change_angle(const Point&  pt)
 {
-  y = -y+(graph_center.y);
-  x =  x-(graph_center.x);
+  double  y = -pt.y+(graph_center.y);
+  double  x =  pt.x-(graph_center.x);
 
-    if(x || y)
+    if((x != 0.0) &&
+       (y != 0.0))
     {
-      auto  r = -std::atan2(static_cast<double>(y),static_cast<double>(x));
+      auto  r = -std::atan2(y,x);
 
         switch(joining_kind)
         {

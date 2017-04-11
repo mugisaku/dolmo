@@ -44,6 +44,7 @@ set(SOURCES
   dolmo_rectangle.cpp
   dolmo_image.cpp
   dolmo_screen.cpp
+  dolmo_font.cpp
   dolmo_node.cpp
 )
 

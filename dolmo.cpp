@@ -13,6 +13,10 @@ namespace{
 Node*  current_node = nullptr;
 
 
+Point  previous_point;
+Point   current_point;
+
+
 int
 current_index;
 
@@ -41,24 +45,41 @@ bool
 needed_to_redraw = true;
 
 
+void
+insert_new_to_previous()
+{
+}
+
+
+void
+insert_new_to_next()
+{
+}
+
+
+void
+e()
+{
+}
 
 
 void
 process_button(const SDL_MouseButtonEvent&  evt)
 {
-  current_node = screen::get(evt.x,evt.y);
+    if(!screen::push_button(evt.x,evt.y))
+    {
+      current_node = screen::get(evt.x,evt.y);
+
+                       current_point.assign(evt.x,evt.y);
+      previous_point = current_point                    ;
+    }
 }
 
 
 void
 process_motion(const SDL_MouseMotionEvent&  evt)
 {
-    if(current_node)
-    {
-      current_node->change_angle(evt.x,evt.y);
-
-      needed_to_redraw = true;
-    }
+  current_point.assign(evt.x,evt.y);
 }
 
 
@@ -71,7 +92,8 @@ render()
 
       (*current_root)->render();
 
-      screen::put(current_index+1,root_list.size(),0,0);
+
+      screen::put(current_index+1,root_list.size(),screen::width-(16*5),0);
 
       screen::update();
 
@@ -87,7 +109,7 @@ load(char*  path)
 
     if(f)
     {
-      static char  buf[2048];
+      static char  buf[4096];
 
       char*  p = buf;
 
@@ -167,6 +189,11 @@ main(int  argc, char**  argv)
   screen::open();
   image::open("dolmo_parts.png");
 
+  screen::make_button(0, 0,"insert new to previous",e);
+  screen::make_button(0,20,"insert new to next",e);
+  screen::make_button(0,40,"erase this",e);
+  screen::make_button(0,60,"animate",e);
+  screen::make_button(0,80,"print",e);
 
   model = create_model();
 
@@ -222,6 +249,20 @@ main(int  argc, char**  argv)
           case(SDL_QUIT):
               goto EXIT;
               break;
+            }
+        }
+
+
+        if(current_node)
+        {
+          current_node->change_angle(current_point);
+
+            if((current_point.x != previous_point.x) ||
+               (current_point.y != previous_point.y))
+            {
+              previous_point = current_point;
+
+              needed_to_redraw = true;
             }
         }
 

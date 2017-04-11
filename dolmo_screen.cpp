@@ -1,6 +1,9 @@
 #include"dolmo_screen.hpp"
 #include"dolmo_node.hpp"
+#include"dolmo_font.hpp"
 #include<SDL.h>
+#include<vector>
+#include<cstring>
 
 
 
@@ -8,122 +11,25 @@
 namespace{
 
 
-constexpr int  glyph_size = 8;
-
-
-const uint8_t
-slash_glyph[] =
-{
-  0b00000000,
-  0b00000011,
-  0b00000110,
-  0b00000110,
-  0b00011100,
-  0b00110000,
-  0b00110000,
-  0b01100000,
-
-};
-
-
-const uint8_t
-digit_glyph[] =
-{
-  0b00000000,
-  0b00011000,
-  0b00100100,
-  0b01000010,
-  0b01000010,
-  0b01000010,
-  0b00100100,
-  0b00011000,
-
-  0b00000000,
-  0b00001000,
-  0b00011000,
-  0b00101000,
-  0b00001000,
-  0b00001000,
-  0b00001000,
-  0b00111110,
-
-  0b00000000,
-  0b00011100,
-  0b00100010,
-  0b01000010,
-  0b00000010,
-  0b00011100,
-  0b00100000,
-  0b01111111,
-
-  0b00000000,
-  0b00111110,
-  0b01000001,
-  0b00000001,
-  0b00001110,
-  0b01000001,
-  0b01000001,
-  0b00111110,
-
-  0b00000000,
-  0b00000100,
-  0b00001100,
-  0b00010100,
-  0b00100100,
-  0b01111111,
-  0b00000100,
-  0b00000100,
-
-  0b00000000,
-  0b01111111,
-  0b01000000,
-  0b01011110,
-  0b01100001,
-  0b00000001,
-  0b01000001,
-  0b00111110,
-
-  0b00000000,
-  0b00111111,
-  0b01000000,
-  0b01000000,
-  0b01111110,
-  0b01000001,
-  0b01000001,
-  0b00111110,
-
-  0b00000000,
-  0b01111111,
-  0b00000001,
-  0b00000010,
-  0b00000100,
-  0b00001000,
-  0b00010000,
-  0b00100000,
-
-  0b00000000,
-  0b00111110,
-  0b01000001,
-  0b00111110,
-  0b01000001,
-  0b01000001,
-  0b01000001,
-  0b00111110,
-
-  0b00000000,
-  0b00111110,
-  0b01000001,
-  0b01000001,
-  0b00111111,
-  0b00000001,
-  0b01000001,
-  0b00111110,
-
-};
-
-
 SDL_Window*    window;
 SDL_Surface*  surface;
+
+
+struct
+Button: public  Rect
+{
+  const char*  text;
+
+  Callback  callback;
+
+  Button(int  x_, int  y_, const char*  text_, Callback  cb):
+  Rect(x_,y_,16*std::strlen(text_),16),
+  text(text_),
+  callback(cb)
+  {
+  }
+
+};
 
 
 struct
@@ -144,6 +50,10 @@ table[screen::height][screen::width];
 
 uint32_t
 palette[4];
+
+
+std::vector<Button>
+button_list;
 
 
 }
@@ -184,6 +94,7 @@ void
 clear()
 {
   auto  it  = &table[0][0];
+
   constexpr auto  end = &table[height-1][width];
 
     while(it != end)
@@ -200,11 +111,42 @@ clear()
 
 
 void
-render(const uint8_t*  p, int  x, int  y)
+make_button(int  x, int  y, const char*  text, Callback  cb)
+{
+  button_list.emplace_back(x,y,text,cb);
+}
+
+
+bool
+push_button(int  x, int  y)
+{
+  Point  pt(x,y);
+
+    for(auto&  btn: button_list)
+    {
+        if(btn.test(pt))
+        {
+          btn.callback();
+
+          return true;
+        }
+    }
+
+
+  return false;
+}
+
+
+
+
+void
+render(const Glyph&  gl, int  x, int  y)
 {
   auto  dst_base = &table[y][x];
 
-    for(int  yy = 0;  yy < glyph_size;  ++yy)
+  const uint8_t*  p = gl.data;
+
+    for(int  yy = 0;  yy < Glyph::size;  ++yy)
     {
       auto  v = *p++;
 
@@ -213,7 +155,7 @@ render(const uint8_t*  p, int  x, int  y)
 
       dst_base += width*2;
 
-        for(int  xx = 0;  xx < glyph_size;  ++xx)
+        for(int  xx = 0;  xx < Glyph::size;  ++xx)
         {
             if(v&0x80)
             {
@@ -236,25 +178,37 @@ render(const uint8_t*  p, int  x, int  y)
 void
 render(int  d, int  x, int  y)
 {
-  auto  i10 = d/10;
-  auto  i1  = d%10;
+  auto  i10 = d/10+'0';
+  auto  i1  = d%10+'0';
 
     if(i10)
     {
-      render(&digit_glyph[glyph_size*i10],x,y);
+      render(get_glyph(i10),x,y);
     }
 
 
-  render(&digit_glyph[glyph_size*i1],x+16,y);
+  render(get_glyph(i1),x+16,y);
+}
+
+
+void
+put(const char*  s, int  x, int  y)
+{
+    while(*s)
+    {
+      render(get_glyph(*s++),x,y);
+
+      x += 16;
+    }
 }
 
 
 void
 put(int  cur, int  max, int  x, int  y)
 {
-  render(        cur,x   ,y);
-  render(slash_glyph,x+32,y);
-  render(        max,x+48,y);
+  render(           cur,x   ,y);
+  render(get_glyph('/'),x+32,y);
+  render(           max,x+48,y);
 }
 
 
@@ -290,6 +244,12 @@ get(int  x, int  y)
 void
 update()
 {
+    for(auto&  btn: button_list)
+    {
+      put(btn.text,btn.x,btn.y);
+    }
+
+
   SDL_memset(surface->pixels,0,surface->pitch*height);
 
   auto  dst_base = static_cast<uint8_t*>(surface->pixels);

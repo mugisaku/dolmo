@@ -69,7 +69,7 @@ Node
   Node*  join(Node*  child                                                       );
   Node*  join(Node*  child, int  x, int  y, JoiningKind  jk=JoiningKind::downward);
 
-  void  change_angle(int  x, int  y);
+  void  change_angle(const Point&  pt);
 
   void  update();
 
