@@ -178,16 +178,16 @@ render(const Glyph&  gl, int  x, int  y)
 void
 render(int  d, int  x, int  y)
 {
-  auto  i10 = d/10+'0';
-  auto  i1  = d%10+'0';
+  auto  i10 = d/10;
+  auto  i1  = d%10;
 
     if(i10)
     {
-      render(get_glyph(i10),x,y);
+      render(get_glyph(i10+'0'),x,y);
     }
 
 
-  render(get_glyph(i1),x+16,y);
+  render(get_glyph(i1+'0'),x+16,y);
 }
 
 
@@ -196,7 +196,9 @@ put(const char*  s, int  x, int  y)
 {
     while(*s)
     {
-      render(get_glyph(*s++),x,y);
+      auto  c = *s++;
+
+      render(get_glyph(c),x,y);
 
       x += 16;
     }

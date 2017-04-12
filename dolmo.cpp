@@ -3,8 +3,12 @@
 #include"dolmo_image.hpp"
 #include<list>
 #include<vector>
+#include<cstdlib>
 
 
+#ifdef EMSCRIPTEN
+#include"emscripten.h"
+#endif
 
 
 namespace{
@@ -42,36 +46,132 @@ model;
 
 
 bool
+animation_flag;
+
+
+bool
 needed_to_redraw = true;
+
+
+void
+change_to_previous()
+{
+    if(current_index)
+    {
+      --current_index;
+
+      --current_root;
+
+      needed_to_redraw = true;
+    }
+}
+
+
+void
+change_to_next()
+{
+    if(current_index < (root_list.size()-1))
+    {
+      ++current_index;
+
+      ++current_root;
+
+      needed_to_redraw = true;
+    }
+}
 
 
 void
 insert_new_to_previous()
 {
+    if(root_list.size() < 98)
+    {
+      auto  root = new Node(*model);
+
+      root->update();
+
+      root_list.emplace(current_root,root);
+
+      ++current_index;
+
+      needed_to_redraw = true;
+    }
 }
 
 
 void
 insert_new_to_next()
 {
+    if(root_list.size() < 98)
+    {
+      auto  root = new Node(*model);
+
+      auto  it = current_root;
+
+      root->update();
+
+      root_list.emplace(++it,root);
+
+      needed_to_redraw = true;
+    }
 }
 
 
 void
-e()
+erase_this()
 {
+    if(root_list.size() > 1)
+    {
+      current_root = root_list.erase(current_root);
+
+        if(current_root == root_list.end())
+        {
+          --current_index;
+          --current_root;
+        }
+
+
+      needed_to_redraw = true;
+    }
+}
+
+
+void
+print()
+{
+}
+
+
+void
+start_to_animate()
+{
+  animation_flag = true;
+
+  current_frame = root_list.cbegin();
+
+  needed_to_redraw = true;
 }
 
 
 void
 process_button(const SDL_MouseButtonEvent&  evt)
 {
-    if(!screen::push_button(evt.x,evt.y))
+    if(animation_flag)
     {
-      current_node = screen::get(evt.x,evt.y);
+      animation_flag = false;
 
-                       current_point.assign(evt.x,evt.y);
-      previous_point = current_point                    ;
+      needed_to_redraw = true;
+    }
+
+  else
+    {
+        if(!screen::push_button(evt.x,evt.y))
+        {
+          current_node = screen::get(evt.x,evt.y);
+
+                           current_point.assign(evt.x,evt.y);
+          previous_point = current_point                    ;
+        }
     }
 }
 
@@ -88,9 +188,11 @@ render()
 {
     if(needed_to_redraw)
     {
+      auto  root = animation_flag? current_frame:current_root;
+
       screen::clear();
 
-      (*current_root)->render();
+      (*root)->render();
 
 
       screen::put(current_index+1,root_list.size(),screen::width-(16*5),0);
@@ -178,6 +280,98 @@ create_model()
 }
 
 
+void
+main_loop()
+{
+  static SDL_Event  evt;
+
+    while(SDL_PollEvent(&evt))
+    {
+        switch(evt.type)
+        {
+      case(SDL_DROPFILE):
+          load(evt.drop.file);
+          break;
+      case(SDL_WINDOWEVENT):
+            if(evt.window.event == SDL_WINDOWEVENT_EXPOSED)
+            {
+              needed_to_redraw = true;
+            }
+          break;
+      case(SDL_MOUSEBUTTONDOWN):
+          process_button(evt.button);
+          break;
+      case(SDL_MOUSEBUTTONUP):
+          current_node = nullptr;
+          break;
+      case(SDL_MOUSEMOTION):
+          process_motion(evt.motion);
+          break;
+      case(SDL_KEYDOWN):
+            switch(evt.key.keysym.sym)
+            {
+          case(SDLK_LEFT):
+              break;
+          case(SDLK_RIGHT):
+              ++current_index;
+              needed_to_redraw = true;
+              break;
+          case(SDLK_SPACE):
+              (*current_root)->fprint(stdout);
+              fputc('\n',stdout);
+              fflush(stdout);
+              break;
+            }
+          break;
+      case(SDL_QUIT):
+          screen::close();
+          std::exit(0);
+          break;
+        }
+    }
+
+
+    if(animation_flag)
+    {
+      static uint32_t  last;
+
+      auto  now = SDL_GetTicks();
+
+        if(now >= (last+200))
+        {
+          last = now;
+
+            if(++current_frame == root_list.cend())
+            {
+              current_frame = root_list.cbegin();
+            }
+
+
+          needed_to_redraw = true;
+        }
+    }
+
+  else
+    {
+        if(current_node)
+        {
+            if((current_point.x != previous_point.x) ||
+               (current_point.y != previous_point.y))
+            {
+              current_node->change_angle(current_point);
+
+              previous_point = current_point;
+
+              needed_to_redraw = true;
+            }
+        }
+    }
+
+
+  render();
+}
+
+
 }
 
 
@@ -189,11 +383,13 @@ main(int  argc, char**  argv)
   screen::open();
   image::open("dolmo_parts.png");
 
-  screen::make_button(0, 0,"insert new to previous",e);
-  screen::make_button(0,20,"insert new to next",e);
-  screen::make_button(0,40,"erase this",e);
-  screen::make_button(0,60,"animate",e);
-  screen::make_button(0,80,"print",e);
+  screen::make_button(0,  0,"change to previous",change_to_previous);
+  screen::make_button(0, 20,"change to next",change_to_next);
+  screen::make_button(0, 40,"insert new to previous",insert_new_to_previous);
+  screen::make_button(0, 60,"insert new to next",insert_new_to_next);
+  screen::make_button(0, 80,"erase this",erase_this);
+  screen::make_button(0,100,"animate",start_to_animate);
+  screen::make_button(0,120,"print",print);
 
   model = create_model();
 
@@ -204,77 +400,17 @@ main(int  argc, char**  argv)
   (*current_root)->update();
 
 
-  static SDL_Event  evt;
-
+#ifdef EMSCRIPTEN
+  emscripten_set_main_loop(main_loop,-1,false);
+#else
     for(;;)
     {
-        while(SDL_PollEvent(&evt))
-        {
-            switch(evt.type)
-            {
-          case(SDL_DROPFILE):
-              load(evt.drop.file);
-              break;
-          case(SDL_WINDOWEVENT):
-                if(evt.window.event == SDL_WINDOWEVENT_EXPOSED)
-                {
-                  needed_to_redraw = true;
-                }
-              break;
-          case(SDL_MOUSEBUTTONDOWN):
-              process_button(evt.button);
-              break;
-          case(SDL_MOUSEBUTTONUP):
-              current_node = nullptr;
-              break;
-          case(SDL_MOUSEMOTION):
-              process_motion(evt.motion);
-              break;
-          case(SDL_KEYDOWN):
-                switch(evt.key.keysym.sym)
-                {
-              case(SDLK_LEFT):
-                  break;
-              case(SDLK_RIGHT):
-                  ++current_index;
-                  needed_to_redraw = true;
-                  break;
-              case(SDLK_SPACE):
-                  (*current_root)->fprint(stdout);
-                  fputc('\n',stdout);
-                  fflush(stdout);
-                  break;
-                }
-              break;
-          case(SDL_QUIT):
-              goto EXIT;
-              break;
-            }
-        }
-
-
-        if(current_node)
-        {
-          current_node->change_angle(current_point);
-
-            if((current_point.x != previous_point.x) ||
-               (current_point.y != previous_point.y))
-            {
-              previous_point = current_point;
-
-              needed_to_redraw = true;
-            }
-        }
-
-
-      render();
+      main_loop();
 
       SDL_Delay(20);
     }
+#endif
 
-
-EXIT:
-  screen::close();
 
   return 0;
 }

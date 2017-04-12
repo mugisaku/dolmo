@@ -9,12 +9,14 @@
 namespace{
 
 
+#ifdef EMSCRIPTEN
+#include"domo_image_embedded.cpp"
+#else
 int  width;
 int  height;
-
-
 std::vector<uint8_t>
 buffer;
+#endif
 
 
 }
@@ -28,6 +30,7 @@ namespace image{
 void
 open(const char*  path)
 {
+#ifndef EMSCRIPTEN
   IMG_Init(IMG_INIT_PNG);
 
   auto  bmp = IMG_Load(path);
@@ -40,7 +43,7 @@ open(const char*  path)
   auto  dst      = buffer.begin();
   auto  src_base = static_cast<const uint8_t*>(bmp->pixels);
 
-    for(int  y = 0;  y < height;  ++y)
+    for(int  y = 0;  y < bmp->h;  ++y)
     {
       auto  src = src_base              ;
                   src_base += bmp->pitch;
@@ -55,6 +58,7 @@ open(const char*  path)
   SDL_FreeSurface(bmp);
 
   IMG_Quit();
+#endif
 }
 
 

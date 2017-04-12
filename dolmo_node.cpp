@@ -228,10 +228,12 @@ render()
 {
   render_image();
 
+/*
     if(parent)
     {
       render_center();
     }
+*/
 
 
     for(auto  child: children)

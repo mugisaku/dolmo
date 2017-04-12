@@ -34,7 +34,7 @@ if(EMSCRIPTEN)
   set(CMAKE_CXX_COMPILER  em++)
   set(CMAKE_CXX_FLAGS "-std=c++14 -Werror -Wno-switch -O2")
   set(CMAKE_CXX_FLAGS_DEBUG "")
-  set(CMAKE_CXX_LINK_FLAGS  "${CMAKE_CXX_LINK_FLAGS} -s USE_ZLIB=1 -s USE_SDL=2 --embed-file font.bin --embed-file data.bin")
+  set(CMAKE_CXX_LINK_FLAGS  "${CMAKE_CXX_LINK_FLAGS} -s USE_SDL=2")
 endif()
 
 
@@ -51,11 +51,12 @@ set(SOURCES
 
 include_directories(.)
 include_directories(/usr/include/SDL2)
+add_executable("png2src${EXECUTABLE_EXTENSION}" png2src_main.cpp)
 add_executable("Dolmo${EXECUTABLE_EXTENSION}" dolmo.cpp ${SOURCES})
 
 
 if(EMSCRIPTEN)
-  set_target_properties("Rogie${EXECUTABLE_EXTENSION}" PROPERTIES LINK_FLAGS "--shell-file rogie_shell.html")
+  set_target_properties("Dolmo${EXECUTABLE_EXTENSION}" PROPERTIES LINK_FLAGS "--shell-file shell.html")
 endif()
 
 

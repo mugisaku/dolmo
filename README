@@ -1,0 +1,9 @@
+ビルドにはcmakeを併用します
+CMakeLists.txtの、CMAKE_CXX_FLAGS_RELEASEを適宜変更したら
+builddirに入って、以下のように入力しましょう
+  cmake .. -DCMAKE_BUILD_TYPE=Release
+  make
+
+
+
+
