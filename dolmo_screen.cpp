@@ -20,11 +20,14 @@ Button: public  Rect
 {
   const char*  text;
 
+  RootManager&  manager;
+
   Callback  callback;
 
-  Button(int  x_, int  y_, const char*  text_, Callback  cb):
+  Button(int  x_, int  y_, const char*  text_, RootManager&  mgr, Callback  cb):
   Rect(x_,y_,16*std::strlen(text_),16),
   text(text_),
+  manager(mgr),
   callback(cb)
   {
   }
@@ -46,6 +49,10 @@ Cell
 
 Cell
 table[screen::height][screen::width];
+
+
+const Button*
+current_button;
 
 
 uint32_t
@@ -111,14 +118,14 @@ clear()
 
 
 void
-make_button(int  x, int  y, const char*  text, Callback  cb)
+make_button(int  x, int  y, const char*  text, RootManager&  mgr, Callback  cb)
 {
-  button_list.emplace_back(x,y,text,cb);
+  button_list.emplace_back(x,y,text,mgr,cb);
 }
 
 
 bool
-push_button(int  x, int  y)
+touch_button(int  x, int  y, bool  press)
 {
   Point  pt(x,y);
 
@@ -126,12 +133,20 @@ push_button(int  x, int  y)
     {
         if(btn.test(pt))
         {
-          btn.callback();
+          current_button = &btn;
+
+            if(press)
+            {
+              (btn.manager.*btn.callback)();
+            }
+
 
           return true;
         }
     }
 
+
+  current_button = nullptr;
 
   return false;
 }

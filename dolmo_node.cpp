@@ -164,14 +164,8 @@ render_center()
     {
         for(int  x = 0;  x < circle_radius*2;  ++x)
         {
-          auto  i = image::get( 90+x,
-                               110+y);
-
-            if(i)
-            {
-              screen::put(i,this,graph_center.x-circle_radius+x,
-                                 graph_center.y-circle_radius+y);
-            }
+          screen::put(2,this,graph_center.x-circle_radius+x,
+                             graph_center.y-circle_radius+y);
         }
     }
 }
@@ -224,9 +218,13 @@ render_image()
 
 void
 Node::
-render()
+render(int  z_max)
 {
-  render_image();
+    if(z_value <= z_max)
+    {
+      render_image();
+    }
+
 
 /*
     if(parent)
@@ -235,10 +233,9 @@ render()
     }
 */
 
-
     for(auto  child: children)
     {
-      child->render();
+      child->render(z_max);
     }
 }
 

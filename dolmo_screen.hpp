@@ -3,20 +3,17 @@
 
 
 #include<cstdint>
+#include"dolmo_rootmanager.hpp"
 
 
-struct Node;
-struct Point;
-
-
-using Callback = void(*)();
+using Callback = void(RootManager::*)();
 
 
 namespace screen{
 
 
-constexpr int  width  = 640;
-constexpr int  height = 640;
+constexpr int  width  = 540;
+constexpr int  height = 540;
 
 
 void   open();
@@ -24,9 +21,8 @@ void  close();
 
 void  clear();
 
-void  make_button(int  x, int  y, const char*  text, Callback  cb);
-
-bool  push_button(int  x, int  y);
+void  make_button(int  x, int  y, const char*  text, RootManager&  mgr, Callback  cb);
+bool  touch_button(int  x, int  y, bool  press=false);
 
 void   put(const char*  s, int  x, int  y);
 void   put(int  cur, int  max, int  x, int  y);

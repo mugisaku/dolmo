@@ -75,7 +75,7 @@ Node
 
   void  render_center();
   void  render_image();
-  void  render();
+  void  render(int  z_max);
 
   const char*   sscan(const char*  s);
   void  fprint(FILE*  f) const;
