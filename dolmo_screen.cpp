@@ -56,11 +56,18 @@ current_button;
 
 
 uint32_t
-palette[4];
+palette[4*5];
 
 
 std::vector<Button>
 button_list;
+
+
+uint32_t
+map_rgb(uint8_t  l)
+{
+  return SDL_MapRGB(surface->format,l,l,l);
+}
 
 
 }
@@ -82,9 +89,25 @@ open()
 
   surface = SDL_GetWindowSurface(window);
 
-  palette[1] = SDL_MapRGB(surface->format,63,63,63);
-  palette[2] = SDL_MapRGB(surface->format,127,127,127);
-  palette[3] = SDL_MapRGB(surface->format,255,255,255);
+  palette[1] = map_rgb(0x00);
+  palette[2] = map_rgb(0x3F);
+  palette[3] = map_rgb(0x7F);
+
+  palette[5] = map_rgb(0x00);
+  palette[6] = map_rgb(0x4F);
+  palette[7] = map_rgb(0x9F);
+
+  palette[ 9] = map_rgb(0x00);
+  palette[10] = map_rgb(0x5F);
+  palette[11] = map_rgb(0xBF);
+
+  palette[13] = map_rgb(0x00);
+  palette[14] = map_rgb(0x6F);
+  palette[15] = map_rgb(0xDF);
+
+  palette[17] = map_rgb(0x00);
+  palette[18] = map_rgb(0x7F);
+  palette[19] = map_rgb(0xFF);
 }
 
 
@@ -174,10 +197,10 @@ render(const Glyph&  gl, int  x, int  y)
         {
             if(v&0x80)
             {
-              (dst0  )->color_index = 3;
-              (dst0+1)->color_index = 3;
-              (dst1  )->color_index = 3;
-              (dst1+1)->color_index = 3;
+              (dst0  )->color_index = 19;
+              (dst0+1)->color_index = 19;
+              (dst1  )->color_index = 19;
+              (dst1+1)->color_index = 19;
             }
 
 
@@ -243,7 +266,7 @@ put(int  color_index, Node*  nodeptr, int  x, int  y)
 
         if(!cell.color_index || (cell.z < z))
         {
-          cell.color_index = color_index;
+          cell.color_index = color_index|(z<<2);
           cell.z           = z;
           cell.nodeptr     = nodeptr;
         }
@@ -259,11 +282,14 @@ get(int  x, int  y)
 
 
 void
-update()
+update(bool  show_menu)
 {
-    for(auto&  btn: button_list)
+    if(show_menu)
     {
-      put(btn.text,btn.x,btn.y);
+        for(auto&  btn: button_list)
+        {
+          put(btn.text,btn.x,btn.y);
+        }
     }
 
 

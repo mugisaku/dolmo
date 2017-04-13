@@ -55,6 +55,27 @@ base_offset(rhs.base_offset)
 
 
 
+void
+Node::
+reform(const Node&  rhs)
+{
+  base_offset = rhs.base_offset;
+  own_radian  = rhs.own_radian;
+
+    if(children.size() == rhs.children.size())
+    {
+      auto  dst =     children.begin();
+      auto  src = rhs.children.cbegin();
+      auto  end = rhs.children.cend();
+
+        while(src != end)
+        {
+          (*dst++)->reform(**src++);
+        }
+    }
+}
+
+
 Node*
 Node::
 join(Node*  child)

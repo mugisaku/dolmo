@@ -10,6 +10,7 @@ RootManager::
 RootManager():
 z_max(z_max_max),
 last_time(0),
+copy_node(nullptr),
 needed_to_redraw(true)
 {
   root_list.emplace_back(new Node(get_model()));
@@ -98,7 +99,7 @@ render()
 
       screen::put(current_index+1,root_list.size(),0,0);
 
-      screen::update();
+      screen::update(!animation_flag);
 
       needed_to_redraw = false;
     }

@@ -13,6 +13,28 @@ std::vector<Node*>
 stock;
 
 
+Node*
+raise_node()
+{
+  Node*  ptr;
+
+    if(stock.size())
+    {
+      ptr = stock.back();
+
+      stock.pop_back();
+    }
+
+  else
+    {
+      ptr = new Node(get_model());
+    }
+
+
+  return ptr;
+}
+
+
 }
 
 
@@ -78,7 +100,7 @@ insert_new_to_previous()
 {
     if(root_list.size() < 98)
     {
-      auto  root = new Node(get_model());
+      auto  root = raise_node();
 
       root->update();
 
@@ -97,7 +119,7 @@ insert_new_to_next()
 {
     if(root_list.size() < 98)
     {
-      auto  root = new Node(get_model());
+      auto  root = raise_node();
 
       auto  it = current_root;
 
@@ -112,10 +134,40 @@ insert_new_to_next()
 
 void
 RootManager::
+copy_this()
+{
+    if(!copy_node)
+    {
+      copy_node = raise_node();
+    }
+
+
+  copy_node->reform(**current_root);
+}
+
+
+void
+RootManager::
+apply_copy()
+{
+    if(copy_node)
+    {
+      (*current_root)->reform(*copy_node);
+      (*current_root)->update();
+
+      needed_to_redraw = true;
+    }
+}
+
+
+void
+RootManager::
 erase_this()
 {
     if(root_list.size() > 1)
     {
+      stock.emplace_back(*current_root);
+
       current_root = root_list.erase(current_root);
 
         if(current_root == root_list.end())

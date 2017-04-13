@@ -26,7 +26,7 @@ save(const SDL_Surface*  bmp, FILE*  f)
 
         for(int  x = 0;  x < bmp->w;  ++x)
         {
-          fprintf(f,"0x%02X,",*src++);
+          fprintf(f,"%d,",*src++);
         }
 
 

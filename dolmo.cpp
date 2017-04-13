@@ -123,10 +123,11 @@ main(int  argc, char**  argv)
   screen::make_button(0,y,"increase z max",mgr,&RootManager::increase_z_max);  y += 20;
   screen::make_button(0,y,"decrease z max",mgr,&RootManager::decrease_z_max);  y += 20;
   screen::make_button(0,y,"change to previous",mgr,&RootManager::change_to_previous);  y += 20;
-  screen::make_button(0,y,"change to previous",mgr,&RootManager::change_to_previous);  y += 20;
   screen::make_button(0,y,"change to next",mgr,&RootManager::change_to_next);  y += 20;
   screen::make_button(0,y,"insert new to previous",mgr,&RootManager::insert_new_to_previous);  y += 20;
   screen::make_button(0,y,"insert new to next",mgr,&RootManager::insert_new_to_next);  y += 20;
+  screen::make_button(0,y,"copy this",mgr,&RootManager::copy_this);  y += 20;
+  screen::make_button(0,y,"apply copy",mgr,&RootManager::apply_copy);  y += 20;
   screen::make_button(0,y,"erase this",mgr,&RootManager::erase_this);  y += 20;
   screen::make_button(0,y,"animate",mgr,&RootManager::start_to_animate);  y += 20;
   screen::make_button(0,y,"print",mgr,&RootManager::print);  y += 20;

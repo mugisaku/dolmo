@@ -66,6 +66,8 @@ Node
   Node(const Node&  rhs) noexcept;
 
 
+  void  reform(const Node&  rhs);
+
   Node*  join(Node*  child                                                       );
   Node*  join(Node*  child, int  x, int  y, JoiningKind  jk=JoiningKind::downward);
 

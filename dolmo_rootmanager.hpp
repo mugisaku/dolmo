@@ -12,6 +12,7 @@ RootManager
   static constexpr int  z_max_max = 4;
 
   Node*  current_node;
+  Node*     copy_node;
 
   Point  previous_point;
   Point   current_point;
@@ -43,6 +44,8 @@ public:
   void  change_to_next();
   void  insert_new_to_previous();
   void  insert_new_to_next();
+  void  copy_this();
+  void  apply_copy();
   void  erase_this();
   void  print();
   void  start_to_animate();

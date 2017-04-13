@@ -1,3 +1,7 @@
+下記アドレスのdolmo_parts.pngをbuilddir/に置いてください
+https://drive.google.com/drive/folders/0B_7bNzvT8p7UdzVpN3ZUUjBLaVE?usp=sharing
+
+
 ビルドにはcmakeを併用します
 CMakeLists.txtの、CMAKE_CXX_FLAGS_RELEASEを適宜変更したら
 builddirに入って、以下のように入力しましょう
