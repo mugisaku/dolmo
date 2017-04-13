@@ -81,7 +81,7 @@ main_loop()
       case(SDL_WINDOWEVENT):
             if(evt.window.event == SDL_WINDOWEVENT_EXPOSED)
             {
-//              needed_to_redraw = true;
+              mgr.render(true);
             }
           break;
       case(SDL_MOUSEBUTTONDOWN):
@@ -94,15 +94,16 @@ main_loop()
           process_motion(evt.motion);
           break;
       case(SDL_QUIT):
+          fflush(stdout);
           screen::close();
-          std::exit(0);
+          std::quick_exit(EXIT_SUCCESS);
           break;
         }
     }
 
 
   mgr.step();
-  mgr.render();
+  mgr.render(false);
 }
 
 

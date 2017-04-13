@@ -1,41 +1,8 @@
 #include"dolmo_rootmanager.hpp"
 #include"dolmo_model.hpp"
 #include"dolmo_screen.hpp"
-#include<vector>
 
 
-
-
-namespace{
-
-
-std::vector<Node*>
-stock;
-
-
-Node*
-raise_node()
-{
-  Node*  ptr;
-
-    if(stock.size())
-    {
-      ptr = stock.back();
-
-      stock.pop_back();
-    }
-
-  else
-    {
-      ptr = new Node(get_model());
-    }
-
-
-  return ptr;
-}
-
-
-}
 
 
 void
@@ -166,7 +133,7 @@ erase_this()
 {
     if(root_list.size() > 1)
     {
-      stock.emplace_back(*current_root);
+      trash.emplace_back(*current_root);
 
       current_root = root_list.erase(current_root);
 
@@ -186,6 +153,12 @@ void
 RootManager::
 print()
 {
+  printf("%d,",root_list.size());
+
+    for(auto  root: root_list)
+    {
+      root->fprint(stdout);
+    }
 }
 
 

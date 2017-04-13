@@ -69,26 +69,87 @@ unpress()
 }
 
 
+std::vector<Node*>
+RootManager::
+trash;
+
+
+Node*
+RootManager::
+raise_node()
+{
+  Node*  ptr;
+
+    if(trash.size())
+    {
+      ptr = trash.back();
+
+      trash.pop_back();
+    }
+
+  else
+    {
+      ptr = new Node(get_model());
+    }
+
+
+  return ptr;
+}
 
 
 void
 RootManager::
 load(const char*  s)
 {
-    if((*current_root)->sscan(s))
+    if(animation_flag)
     {
-      (*current_root)->update();
+      return;
+    }
+
+
+  int  d;
+  int  n;
+
+    if(sscanf(s," %d , %n",&d,&n) >= 1)
+    {
+        if(d >= 1)
+        {
+          s += n;
+
+            for(auto  root: root_list)
+            {
+              trash.emplace_back(root);
+            }
+
+
+          root_list.clear();
+
+            while(d--)
+            {
+              auto  root = raise_node();
+
+              s = root->sscan(s);
+
+              root->update();
+
+              root_list.emplace_back(root);
+            }
+
+
+          current_node = nullptr;
+          current_root = root_list.begin();
+
+          needed_to_redraw = true;
+        }
     }
 }
 
 
-
-
 void
 RootManager::
-render()
+render(bool  force)
 {
-    if(needed_to_redraw)
+    if(force || needed_to_redraw)
     {
       auto  root = animation_flag? current_frame:current_root;
 

@@ -3,6 +3,7 @@
 
 
 #include<list>
+#include<vector>
 #include"dolmo_node.hpp"
 
 
@@ -10,6 +11,11 @@ class
 RootManager
 {
   static constexpr int  z_max_max = 4;
+
+  static std::vector<Node*>  trash;
+
+  static Node*  raise_node();
+
 
   Node*  current_node;
   Node*     copy_node;
@@ -59,7 +65,7 @@ public:
   void  load(const char*  s);
 
   void  step();
-  void  render();
+  void  render(bool  force);
 
 };
 
