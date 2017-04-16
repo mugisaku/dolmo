@@ -147,6 +147,34 @@ load(const char*  s)
 
 void
 RootManager::
+save(const char*  base)
+{
+  int  n = 0;
+
+  char  buf[80];
+
+    for(auto  root: root_list)
+    {
+      snprintf(buf,sizeof(buf),"%s%03d.bmp",base,n++);
+
+      screen::clear();
+
+      root->render(z_max_max);
+
+      screen::render();
+
+      screen::save(buf);
+    }
+
+
+  needed_to_redraw = true;
+}
+
+
+
+
+void
+RootManager::
 render(bool  force)
 {
     if(force || needed_to_redraw)
@@ -156,7 +184,6 @@ render(bool  force)
       screen::clear();
 
       (*root)->render(z_max);
-
 
       screen::put(current_index+1,root_list.size(),0,0);
 

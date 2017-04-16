@@ -10,7 +10,7 @@ namespace{
 
 
 #ifdef EMSCRIPTEN
-#include"dolmo_image_embedded.cpp"
+#include"builddir/dolmo_image_embedded.cpp"
 #else
 int  width;
 int  height;

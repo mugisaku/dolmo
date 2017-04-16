@@ -159,6 +159,9 @@ print()
     {
       root->fprint(stdout);
     }
+
+
+  printf("\n");
 }
 
 

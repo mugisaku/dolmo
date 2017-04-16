@@ -29,6 +29,8 @@ void   put(int  cur, int  max, int  x, int  y);
 void   put(int  color_index, Node*  nodeptr, int  x, int  y);
 Node*  get(int  x, int  y);
 
+void  render();
+void  save(const char*  path);
 void  update(bool  show_menu);
 
 

@@ -93,10 +93,17 @@ main_loop()
       case(SDL_MOUSEMOTION):
           process_motion(evt.motion);
           break;
+      case(SDL_KEYDOWN):
+            if(evt.key.keysym.sym == SDLK_SPACE)
+            {
+              mgr.save("__DOLMO");
+              mgr.print();
+            }
+          break;
       case(SDL_QUIT):
           fflush(stdout);
           screen::close();
-          std::quick_exit(EXIT_SUCCESS);
+          quick_exit(EXIT_SUCCESS);
           break;
         }
     }
@@ -131,7 +138,6 @@ main(int  argc, char**  argv)
   screen::make_button(0,y,"apply copy",mgr,&RootManager::apply_copy);  y += 20;
   screen::make_button(0,y,"erase this",mgr,&RootManager::erase_this);  y += 20;
   screen::make_button(0,y,"animate",mgr,&RootManager::start_to_animate);  y += 20;
-  screen::make_button(0,y,"print",mgr,&RootManager::print);  y += 20;
 
 
 #ifdef EMSCRIPTEN

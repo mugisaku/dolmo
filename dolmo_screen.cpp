@@ -282,17 +282,15 @@ get(int  x, int  y)
 
 
 void
-update(bool  show_menu)
+save(const char*  path)
 {
-    if(show_menu)
-    {
-        for(auto&  btn: button_list)
-        {
-          put(btn.text,btn.x,btn.y);
-        }
-    }
+  SDL_SaveBMP(surface,path);
+}
 
 
+void
+render()
+{
   SDL_memset(surface->pixels,0,surface->pitch*height);
 
   auto  dst_base = static_cast<uint8_t*>(surface->pixels);
@@ -322,7 +320,22 @@ update(bool  show_menu)
           dst += bpp;
         }
     }
+}
 
+
+void
+update(bool  show_menu)
+{
+    if(show_menu)
+    {
+        for(auto&  btn: button_list)
+        {
+          put(btn.text,btn.x,btn.y);
+        }
+    }
+
+
+  render();
 
   SDL_UpdateWindowSurface(window);
 }

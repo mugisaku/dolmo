@@ -63,6 +63,7 @@ public:
   void  unpress(              );
 
   void  load(const char*  s);
+  void  save(const char*  base);
 
   void  step();
   void  render(bool  force);
