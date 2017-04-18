@@ -4,6 +4,9 @@
 
 
 
+constexpr double  pi = 3.14159265358979323846264338327950288;
+
+
 struct
 Point
 {
@@ -21,6 +24,7 @@ Point
   Point&  operator-=(const Point&  rhs);
 
   Point  transform(double  radian, const Point&  center) const;
+  Point  transform(double  sin_value, double  cos_value, const Point&  center) const;
 
   void  assign(int  x_, int  y_);
 

@@ -9,10 +9,18 @@ Point
 Point::
 transform(double  radian, const Point&  center) const
 {
-  Point  res;
-
   auto  sin_value = std::sin(radian);
   auto  cos_value = std::cos(radian);
+
+  return transform(sin_value,cos_value,center);
+}
+
+
+Point
+Point::
+transform(double  sin_value, double  cos_value, const Point&  center) const
+{
+  Point  res;
 
   res.x = ((x-center.x)*cos_value-(y-center.y)*sin_value+center.x);
   res.y = ((x-center.x)*sin_value+(y-center.y)*cos_value+center.y);

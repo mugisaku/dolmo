@@ -19,7 +19,7 @@ joining_kind(JoiningKind::none),
 z_value(0),
 parent(nullptr),
 base_offset(x,y),
-own_radian(0.0)
+own_degree(0)
 {}
 
 
@@ -31,7 +31,7 @@ z_value(z),
 parent(nullptr),
 image_rect(img_rect),
 image_center(img_center_),
-own_radian(0.0)
+own_degree(0)
 {}
 
 
@@ -43,7 +43,7 @@ z_value(rhs.z_value),
 parent(rhs.parent),
 image_rect(rhs.image_rect),
 image_center(rhs.image_center),
-own_radian(rhs.own_radian),
+own_degree(rhs.own_degree),
 base_offset(rhs.base_offset)
 {
     for(auto  child: rhs.children)
@@ -60,7 +60,7 @@ Node::
 reform(const Node&  rhs)
 {
   base_offset = rhs.base_offset;
-  own_radian  = rhs.own_radian;
+  own_degree  = rhs.own_degree;
 
     if(children.size() == rhs.children.size())
     {
@@ -136,11 +136,11 @@ change_angle(const Point&  pt)
         }
 
 
-      own_radian = r;
+      own_degree = r*180/pi;
 
         if(parent)
         {
-          own_radian -= parent->total_radian;
+          own_degree -= parent->total_degree;
         }
 
 
@@ -155,19 +155,32 @@ update()
 {
     if(parent)
     {
-      const auto&  r = parent->total_radian;
+      const auto&  d = parent->total_degree;
       const auto&  c = parent->graph_center;
 
-      total_radian = r+own_radian;
-
-      graph_center = (c+base_offset).transform(r,c);
+      total_degree = d+own_degree;
     }
 
   else
     {
-      total_radian =  own_radian;
+      total_degree =  own_degree;
       graph_center = base_offset;
     }
+
+
+    sin_value = sin_value_table[(total_degree%360)/10+36];
+    cos_value = cos_value_table[(total_degree%360)/10+36];
+
+    reversed_sin_value = sin_value_table[(-total_degree%360)/10+36];
+    reversed_cos_value = cos_value_table[(-total_degree%360)/10+36];
+
+      if(parent)
+      {
+        const auto&  c = parent->graph_center;
+
+        graph_center = (c+base_offset).transform(parent->sin_value,
+                                                 parent->cos_value,c);
+      }
 
 
     for(auto  child: children)
@@ -217,7 +230,7 @@ render_image(Renderer&  dst)
             {
               Point  pt(x,y);
 
-              pt = pt.transform(-total_radian,image_center);
+              pt = pt.transform(reversed_sin_value,reversed_cos_value,image_center);
 
                 if((pt.x >=            0) &&
                    (pt.y >=            0) &&
@@ -281,7 +294,7 @@ sscan(const char*  s)
         }
 
 
-      own_radian = d*pi/180;
+      own_degree = d;
 
       s += n;
 
@@ -308,7 +321,7 @@ void
 Node::
 fprint(FILE*  f) const
 {
-  fprintf(f,"%d,%d,",static_cast<int>(own_radian*180/pi),children.size());
+  fprintf(f,"%d,%d,",own_degree,children.size());
 
     for(auto  child: children)
     {
@@ -327,8 +340,8 @@ print() const
   image_center.print("image center");
   graph_center.print("graph center");
 
-  printf("  own radian %f\n",own_radian);
-  printf("total radian %f\n",total_radian);
+  printf("  own degree %f\n",own_degree);
+  printf("total degree %f\n",total_degree);
 
   printf("}\n");
 }

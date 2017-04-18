@@ -33,8 +33,8 @@ make()
   auto  r_shin  = r_thigh->join(new Node(  "右脛",3,Rect(u*7,0,u,u),Point(30,0)), 0,64);
   auto  r_foot  =  r_shin->join(new Node(  "右足",3,Rect(u*8,0,u,u),Point(30,0)), 0,64);
 
-  l_thigh->own_radian =  15*pi/180;
-  r_thigh->own_radian = -15*pi/180;
+  l_thigh->own_degree =  18;
+  r_thigh->own_degree = -18;
 
 
   auto  l_upperarm =       bust->join(new Node("左上腕",0,Rect(u*3,0,u,u),Point(32,0)),10,10);
@@ -45,8 +45,8 @@ make()
   auto  r_forearm  = r_upperarm->join(new Node("右前腕",4,Rect(u*4,0,u,u),Point(32,0)), 0,64);
   auto  r_hand     =  r_forearm->join(new Node(  "右手",4,Rect(u*5,0,u,u),Point(32,0)), 0,64);
 
-  l_upperarm->own_radian =  15*pi/180;
-  r_upperarm->own_radian = -15*pi/180;
+  l_upperarm->own_degree =  18;
+  r_upperarm->own_degree = -18;
 
   model = root;
 }

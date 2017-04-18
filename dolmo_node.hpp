@@ -19,14 +19,6 @@ extern int  reporting_count;
 #define report printf("%6d %s %s %d\n",reporting_count++,__FILE__,__func__,__LINE__)
 
 
-struct Node;
-
-constexpr int  circle_radius = 12;
-
-
-constexpr double  pi = 3.14159265358979323846264338327950288;
-
-
 enum class
 JoiningKind
 {
@@ -42,6 +34,9 @@ JoiningKind
 struct
 Node
 {
+  static const double  sin_value_table[];
+  static const double  cos_value_table[];
+
   const char*  name;
 
   int  z_value;
@@ -58,9 +53,13 @@ Node
 
   Point  base_offset;//親ノードからの相対位置
 
-  double    own_radian;//角度
-  double  total_radian;//合計角度。自身の角度と親ノードの合計角度を合わせたもの
+  int    own_degree;//角度(度数法)
+  int  total_degree;//合計角度。自身の角度と親ノードの合計角度を合わせたもの
 
+  double           sin_value;
+  double  reversed_sin_value;
+  double           cos_value;
+  double  reversed_cos_value;
 
   Node(int  x, int  y);
   Node(const char*  name_, int  z, Rect&&  img_rect, Point&&  img_center_);

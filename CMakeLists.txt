@@ -47,6 +47,7 @@ set(SOURCES
   dolmo_screen.cpp
   dolmo_font.cpp
   dolmo_node.cpp
+  dolmo_node__table.cpp
   dolmo_model.cpp
   dolmo_rootmanager.cpp
   dolmo_rootmanager__callback.cpp
