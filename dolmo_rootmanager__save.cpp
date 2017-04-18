@@ -11,6 +11,7 @@
 
 
 
+#ifndef EMSCRIPTEN
 namespace{
 void
 set(png_color&  target, uint8_t  l)
@@ -20,17 +21,19 @@ set(png_color&  target, uint8_t  l)
   target.blue  = l;
 }
 }
+#endif
 
 
 void
 RootManager::
-save(Renderer&  renderer, const char*  base)
+save_as_png(Renderer&  renderer, const char*  base)
 {
+#ifndef EMSCRIPTEN
   static int  n;
 
   char  buf[80];
 
-  snprintf(buf,sizeof(buf),"%s%03d.bmp",base,n++);
+  snprintf(buf,sizeof(buf),"%s%03d.png",base,n++);
 
   auto  f = fopen(buf,"wb");
 
@@ -125,6 +128,7 @@ save(Renderer&  renderer, const char*  base)
   png_destroy_write_struct(&png,&png_info);
 
   fclose(f)         ;
+#endif
 }
 
 

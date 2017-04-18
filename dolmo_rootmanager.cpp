@@ -97,6 +97,26 @@ raise_node()
 }
 
 
+
+
+void
+RootManager::
+fprint(FILE*  f) const
+{
+  fprintf(f,"%d,\n",root_list.size());
+
+    for(auto  root: root_list)
+    {
+      root->fprint(f);
+
+      fprintf(f,"\n");
+    }
+
+
+  fprintf(f,"\n");
+}
+
+
 void
 RootManager::
 load(const char*  s)

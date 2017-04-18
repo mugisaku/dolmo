@@ -151,22 +151,6 @@ erase_this()
 
 void
 RootManager::
-print()
-{
-  printf("%d,",root_list.size());
-
-    for(auto  root: root_list)
-    {
-      root->fprint(stdout);
-    }
-
-
-  printf("\n");
-}
-
-
-void
-RootManager::
 start_to_animate()
 {
   animation_flag = true;

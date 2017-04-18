@@ -54,7 +54,6 @@ public:
   void  copy_this();
   void  apply_copy();
   void  erase_this();
-  void  print();
   void  start_to_animate();
 
 
@@ -63,8 +62,10 @@ public:
   void    press(Renderer&  renderer, int  x, int  y);
   void  unpress(                                   );
 
+  void  fprint(FILE*  f) const;
+
   void  load(const char*  s);
-  void  save(Renderer&  r, const char*  base);
+  void  save_as_png(Renderer&  r, const char*  base);
 
   void  step();
   void  render(Renderer&  dst, bool  force);

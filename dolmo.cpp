@@ -100,8 +100,16 @@ main_loop()
       case(SDL_KEYDOWN):
             if(evt.key.keysym.sym == SDLK_SPACE)
             {
-              mgr.save(renderer,"__DOLMO");
-              mgr.print();
+              mgr.save_as_png(renderer,"__DOLMO");
+
+              auto  f = fopen("__DOLMO.txt","wb");
+
+                if(f)
+                {
+                  mgr.fprint(f);
+
+                  fclose(f);
+                }
             }
           break;
       case(SDL_QUIT):

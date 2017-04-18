@@ -340,8 +340,8 @@ print() const
   image_center.print("image center");
   graph_center.print("graph center");
 
-  printf("  own degree %f\n",own_degree);
-  printf("total degree %f\n",total_degree);
+  printf("  own degree %d\n",own_degree);
+  printf("total degree %d\n",total_degree);
 
   printf("}\n");
 }
