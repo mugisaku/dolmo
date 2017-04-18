@@ -15,6 +15,10 @@
 namespace{
 
 
+Renderer
+renderer(screen::width,screen::height);
+
+
 RootManager
 mgr;
 
@@ -22,7 +26,7 @@ mgr;
 void
 process_button(const SDL_MouseButtonEvent&  evt)
 {
-  mgr.press(evt.x,evt.y);
+  mgr.press(renderer,evt.x,evt.y);
 }
 
 
@@ -81,7 +85,7 @@ main_loop()
       case(SDL_WINDOWEVENT):
             if(evt.window.event == SDL_WINDOWEVENT_EXPOSED)
             {
-              mgr.render(true);
+              mgr.render(renderer,true);
             }
           break;
       case(SDL_MOUSEBUTTONDOWN):
@@ -96,7 +100,7 @@ main_loop()
       case(SDL_KEYDOWN):
             if(evt.key.keysym.sym == SDLK_SPACE)
             {
-              mgr.save("__DOLMO");
+              mgr.save(renderer,"__DOLMO");
               mgr.print();
             }
           break;
@@ -110,7 +114,7 @@ main_loop()
 
 
   mgr.step();
-  mgr.render(false);
+  mgr.render(renderer,false);
 }
 
 

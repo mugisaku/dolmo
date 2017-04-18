@@ -14,6 +14,10 @@ namespace{
 SDL_Window*    window;
 SDL_Surface*  surface;
 
+int  bpp;
+
+uint8_t*  row_table[screen::height];
+
 
 struct
 Button: public  Rect
@@ -33,22 +37,6 @@ Button: public  Rect
   }
 
 };
-
-
-struct
-Cell
-{
-  int  z = 0;
-
-  int  color_index = 0;
-
-  Node*  nodeptr = nullptr;
-
-};
-
-
-Cell
-table[screen::height][screen::width];
 
 
 const Button*
@@ -89,25 +77,21 @@ open()
 
   surface = SDL_GetWindowSurface(window);
 
-  palette[1] = map_rgb(0x00);
-  palette[2] = map_rgb(0x3F);
-  palette[3] = map_rgb(0x7F);
+  bpp = surface->format->BytesPerPixel;
 
-  palette[5] = map_rgb(0x00);
-  palette[6] = map_rgb(0x4F);
-  palette[7] = map_rgb(0x9F);
+    for(int  i = 0;  i < 20;   ++i)
+    {
+      palette[i] = map_rgb(luminance_table[i]);
+    }
 
-  palette[ 9] = map_rgb(0x00);
-  palette[10] = map_rgb(0x5F);
-  palette[11] = map_rgb(0xBF);
 
-  palette[13] = map_rgb(0x00);
-  palette[14] = map_rgb(0x6F);
-  palette[15] = map_rgb(0xDF);
+  auto  p = static_cast<uint8_t*>(surface->pixels);
 
-  palette[17] = map_rgb(0x00);
-  palette[18] = map_rgb(0x7F);
-  palette[19] = map_rgb(0xFF);
+    for(int  y = 0;  y < surface->h;  ++y)
+    {
+      row_table[y] = p                  ;
+                     p += surface->pitch;
+    }
 }
 
 
@@ -123,18 +107,7 @@ close()
 void
 clear()
 {
-  auto  it  = &table[0][0];
-
-  constexpr auto  end = &table[height-1][width];
-
-    while(it != end)
-    {
-      it->color_index = 0;
-      it->z           = 0;
-      it->nodeptr     = nullptr;
-
-      ++it;
-    }
+  SDL_memset(surface->pixels,0,surface->pitch*height);
 }
 
 
@@ -178,34 +151,41 @@ touch_button(int  x, int  y, bool  press)
 
 
 void
+put_color(uint32_t  color, int  x, int  y)
+{
+  auto  dst = row_table[y]+(bpp*x);
+
+    switch(bpp)
+    {
+  case(1):                              *dst = color;break;
+  case(2): *reinterpret_cast<uint16_t*>(dst) = color;break;
+  case(4): *reinterpret_cast<uint32_t*>(dst) = color;break;
+    }
+}
+
+
+void
 render(const Glyph&  gl, int  x, int  y)
 {
-  auto  dst_base = &table[y][x];
-
   const uint8_t*  p = gl.data;
 
     for(int  yy = 0;  yy < Glyph::size;  ++yy)
     {
       auto  v = *p++;
 
-      auto  dst0 = dst_base;
-      auto  dst1 = dst_base+width;
-
-      dst_base += width*2;
-
         for(int  xx = 0;  xx < Glyph::size;  ++xx)
         {
             if(v&0x80)
             {
-              (dst0  )->color_index = 19;
-              (dst0+1)->color_index = 19;
-              (dst1  )->color_index = 19;
-              (dst1+1)->color_index = 19;
+              int  xxx = x+(xx*2);
+              int  yyy = y+(yy*2);
+
+              put_color(0xFFFFFFFF,xxx  ,yyy  );
+              put_color(0xFFFFFFFF,xxx+1,yyy  );
+              put_color(0xFFFFFFFF,xxx  ,yyy+1);
+              put_color(0xFFFFFFFF,xxx+1,yyy+1);
             }
 
-
-          dst0 += 2;
-          dst1 += 2;
 
           v <<= 1;
         }
@@ -253,73 +233,17 @@ put(int  cur, int  max, int  x, int  y)
 
 
 void
-put(int  color_index, Node*  nodeptr, int  x, int  y)
+put(const Renderer&  src)
 {
-    if((x >=     0) &&
-       (y >=     0) &&
-       (x <  width) &&
-       (y < height))
-    {
-      auto&  cell = table[y][x];
+    for(int  y = 0;  y < height;  ++y){
+    for(int  x = 0;  x <  width;  ++x){
+      auto   i = src.get_cell(x,y).color_index;
 
-      auto  z = nodeptr->z_value;
-
-        if(!cell.color_index || (cell.z < z))
+        if(i)
         {
-          cell.color_index = color_index|(z<<2);
-          cell.z           = z;
-          cell.nodeptr     = nodeptr;
+          put_color(palette[i],x,y);
         }
-    }
-}
-
-
-Node*
-get(int  x, int  y)
-{
-  return table[y][x].nodeptr;
-}
-
-
-void
-save(const char*  path)
-{
-  SDL_SaveBMP(surface,path);
-}
-
-
-void
-render()
-{
-  SDL_memset(surface->pixels,0,surface->pitch*height);
-
-  auto  dst_base = static_cast<uint8_t*>(surface->pixels);
-
-  const auto  bpp = surface->format->BytesPerPixel;
-
-    for(int  y = 0;  y < height;  ++y)
-    {
-      auto  dst = dst_base                  ;
-                  dst_base += surface->pitch;
-
-        for(int  x = 0;  x < width;  ++x)
-        {
-          auto   i = table[y][x].color_index;
-
-            if(i)
-            {
-                switch(bpp)
-                {
-              case(1):                              *dst = palette[i];break;
-              case(2): *reinterpret_cast<uint16_t*>(dst) = palette[i];break;
-              case(4): *reinterpret_cast<uint32_t*>(dst) = palette[i];break;
-                }
-            }
-
-
-          dst += bpp;
-        }
-    }
+    }}
 }
 
 
@@ -335,7 +259,6 @@ update(bool  show_menu)
     }
 
 
-  render();
 
   SDL_UpdateWindowSurface(window);
 }

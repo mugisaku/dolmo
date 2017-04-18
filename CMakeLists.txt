@@ -43,12 +43,14 @@ endif()
 set(SOURCES
   dolmo_rectangle.cpp
   dolmo_image.cpp
+  dolmo_renderer.cpp
   dolmo_screen.cpp
   dolmo_font.cpp
   dolmo_node.cpp
   dolmo_model.cpp
   dolmo_rootmanager.cpp
   dolmo_rootmanager__callback.cpp
+  dolmo_rootmanager__save.cpp
 )
 
 

@@ -5,6 +5,7 @@
 #include<list>
 #include<vector>
 #include"dolmo_node.hpp"
+#include"dolmo_renderer.hpp"
 
 
 class
@@ -59,14 +60,14 @@ public:
 
   void  move_pointer(int  x, int  y);
 
-  void    press(int  x, int  y);
-  void  unpress(              );
+  void    press(Renderer&  renderer, int  x, int  y);
+  void  unpress(                                   );
 
   void  load(const char*  s);
-  void  save(const char*  base);
+  void  save(Renderer&  r, const char*  base);
 
   void  step();
-  void  render(bool  force);
+  void  render(Renderer&  dst, bool  force);
 
 };
 

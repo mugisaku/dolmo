@@ -9,6 +9,7 @@
 #include<SDL.h>
 #include<SDL_image.h>
 #include"dolmo_rectangle.hpp"
+#include"dolmo_renderer.hpp"
 
 
 
@@ -75,9 +76,9 @@ Node
 
   void  update();
 
-  void  render_center();
-  void  render_image();
-  void  render(int  z_max);
+  void  render_image(Renderer&  dst);
+  void  render_center(Renderer&  dst);
+  void  render(Renderer&  dst, int  z_max);
 
   const char*   sscan(const char*  s);
   void  fprint(FILE*  f) const;

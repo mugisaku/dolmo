@@ -179,14 +179,16 @@ update()
 
 void
 Node::
-render_center()
+render_center(Renderer&  dst)
 {
+  constexpr int  circle_radius = 8;
+
     for(int  y = 0;  y < circle_radius*2;  ++y)
     {
         for(int  x = 0;  x < circle_radius*2;  ++x)
         {
-          screen::put(2,this,graph_center.x-circle_radius+x,
-                             graph_center.y-circle_radius+y);
+          dst.put(2,this,graph_center.x-circle_radius+x,
+                         graph_center.y-circle_radius+y);
         }
     }
 }
@@ -194,7 +196,7 @@ render_center()
 
 void
 Node::
-render_image()
+render_image(Renderer&  dst)
 {
   const int      image_size = std::max(image_rect.w,image_rect.h);
   const int  rendering_size = image_size*2;
@@ -227,8 +229,8 @@ render_image()
 
                     if(i)
                     {
-                      screen::put(i,this,dst_x,
-                                         dst_y);
+                      dst.put(i,this,dst_x,
+                                     dst_y);
                     }
                 }
             }
@@ -239,24 +241,24 @@ render_image()
 
 void
 Node::
-render(int  z_max)
+render(Renderer&  dst, int  z_max)
 {
     if(z_value <= z_max)
     {
-      render_image();
+      render_image(dst);
     }
 
 
 /*
     if(parent)
     {
-      render_center();
+      render_center(dst);
     }
 */
 
     for(auto  child: children)
     {
-      child->render(z_max);
+      child->render(dst,z_max);
     }
 }
 
