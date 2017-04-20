@@ -19,7 +19,8 @@ joining_kind(JoiningKind::none),
 z_value(0),
 parent(nullptr),
 base_offset(x,y),
-own_degree(0)
+own_degree(0),
+angle_fixed(false)
 {}
 
 
@@ -31,7 +32,8 @@ z_value(z),
 parent(nullptr),
 image_rect(img_rect),
 image_center(img_center_),
-own_degree(0)
+own_degree(0),
+angle_fixed(false)
 {}
 
 
@@ -44,7 +46,8 @@ parent(rhs.parent),
 image_rect(rhs.image_rect),
 image_center(rhs.image_center),
 own_degree(rhs.own_degree),
-base_offset(rhs.base_offset)
+base_offset(rhs.base_offset),
+angle_fixed(rhs.angle_fixed)
 {
     for(auto  child: rhs.children)
     {
@@ -61,6 +64,7 @@ reform(const Node&  rhs)
 {
   base_offset = rhs.base_offset;
   own_degree  = rhs.own_degree;
+  angle_fixed = rhs.angle_fixed;
 
     if(children.size() == rhs.children.size())
     {
@@ -116,35 +120,46 @@ void
 Node::
 change_angle(const Point&  pt)
 {
-  double  y = -pt.y+(graph_center.y);
-  double  x =  pt.x-(graph_center.x);
-
-    if((x != 0.0) &&
-       (y != 0.0))
+    if(angle_fixed)
     {
-      auto  r = -std::atan2(y,x);
-
-        switch(joining_kind)
-        {
-      case(JoiningKind::upward):
-          r += (pi*2)+((pi/2)*1);
-          break;
-      case(JoiningKind::downward):
-          r += (pi*2)+((pi/2)*3);
-          break;
-      default:;
-        }
-
-
-      own_degree = r*180/pi;
-
         if(parent)
         {
-          own_degree -= parent->total_degree;
+          parent->change_angle(pt);
         }
+    }
+
+  else
+    {
+      double  y = -pt.y+(graph_center.y);
+      double  x =  pt.x-(graph_center.x);
+
+        if((x != 0.0) &&
+           (y != 0.0))
+        {
+          auto  r = -std::atan2(y,x);
+
+            switch(joining_kind)
+            {
+          case(JoiningKind::upward):
+              r += (pi*2)+((pi/2)*1);
+              break;
+          case(JoiningKind::downward):
+              r += (pi*2)+((pi/2)*3);
+              break;
+          default:;
+            }
 
 
-      update();
+          own_degree = r*180/pi;
+
+            if(parent)
+            {
+              own_degree -= parent->total_degree;
+            }
+
+
+          update();
+        }
     }
 }
 
@@ -186,23 +201,6 @@ update()
     for(auto  child: children)
     {
       child->update();
-    }
-}
-
-
-void
-Node::
-render_center(Renderer&  dst)
-{
-  constexpr int  circle_radius = 8;
-
-    for(int  y = 0;  y < circle_radius*2;  ++y)
-    {
-        for(int  x = 0;  x < circle_radius*2;  ++x)
-        {
-          dst.put(2,this,graph_center.x-circle_radius+x,
-                         graph_center.y-circle_radius+y);
-        }
     }
 }
 
@@ -261,13 +259,6 @@ render(Renderer&  dst, int  z_max)
       render_image(dst);
     }
 
-
-/*
-    if(parent)
-    {
-      render_center(dst);
-    }
-*/
 
     for(auto  child: children)
     {

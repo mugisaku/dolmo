@@ -53,6 +53,8 @@ Node
 
   Point  base_offset;//親ノードのgraph_centerからの相対位置
 
+  bool  angle_fixed;
+
   int    own_degree;//角度(度数法)
   int  total_degree;//合計角度。自身の角度と親ノードの合計角度を合わせたもの
 
@@ -76,7 +78,6 @@ Node
   void  update();
 
   void  render_image(Renderer&  dst);
-  void  render_center(Renderer&  dst);
   void  render(Renderer&  dst, int  z_max);
 
   const char*   sscan(const char*  s);

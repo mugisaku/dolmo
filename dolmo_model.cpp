@@ -30,9 +30,9 @@ make_arm(Node*  bust, int  z)
 Node*
 make_leg(Node*  waist, int  z)
 {
-  auto  thigh = waist->join(new Node("大腿",z,Rect(u*7,0,u,u),Point(32, 8)),-12,10);
-  auto   shin = thigh->join(new Node(  "脛",z,Rect(u*8,0,u,u),Point(30, 8)), 0,64); 
-  auto   foot =  shin->join(new Node(  "足",z,Rect(u*9,0,u,u),Point(30, 8)), 0,64);
+  auto  thigh = waist->join(new Node("大腿",z,Rect(u*7,0,u,u),Point(32,8)),0, 0);
+  auto   shin = thigh->join(new Node(  "脛",z,Rect(u*8,0,u,u),Point(32,8)),0,64); 
+  auto   foot =  shin->join(new Node(  "足",z,Rect(u*9,0,u,u),Point(32,8)),0,64);
 
   return thigh;
 }
@@ -43,17 +43,18 @@ make()
 {
   auto  root = new Node(screen::width/2,screen::width/2-64);
 
-  auto     head =    root->join(new Node("頭部",2,Rect(u*0,0,u,u),Point(32,64)), 0, 0,JoiningKind::upward);
-  auto     bust =    root->join(new Node("胸部",3,Rect(u*1,0,u,u),Point(32, 8)), 0, 0);
-  auto  abdomen =    bust->join(new Node("腹部",2,Rect(u*2,0,u,u),Point(32,32)), 0,54);
-  auto    waist = abdomen->join(new Node("腰部",3,Rect(u*3,0,u,u),Point(48,32)),16,20);
+  auto     head =    root->join(new Node("頭",2,Rect(u*0,0,u,u),Point(32,56)),0, 0);
+  auto     bust =    head->join(new Node("胸",2,Rect(u*1,0,u,u),Point(32, 8)),0, 8);
+  auto  abdomen =    bust->join(new Node("腹",2,Rect(u*2,0,u,u),Point(32,32)),0,56);
+  auto    waist = abdomen->join(new Node("腰",2,Rect(u*3,0,u,u),Point(32,32)),0,32);
 
-  make_arm(bust,5)->own_degree =  18;
+  waist->angle_fixed = true;
+
+  make_arm(bust,4)->own_degree =  18;
   make_arm(bust,0)->own_degree = -18;
 
-  make_leg(waist,4)->own_degree =  18;
+  make_leg(waist,3)->own_degree =  18;
   make_leg(waist,1)->own_degree = -18;
-
 
 
   model = root;
