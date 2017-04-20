@@ -11,7 +11,7 @@
 class
 RootManager
 {
-  static constexpr int  z_max_max = 4;
+  static constexpr int  z_max_max = 5;
 
   static std::vector<Node*>  trash;
 

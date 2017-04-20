@@ -51,7 +51,7 @@ Node
   Point  image_center;//描画元画像を回転処理するときの中心位置。値は、image_rectからの相対位置
   Point  graph_center;//描画先画像の中心位置。値は、スクリーン上の絶対位置
 
-  Point  base_offset;//親ノードからの相対位置
+  Point  base_offset;//親ノードのgraph_centerからの相対位置
 
   int    own_degree;//角度(度数法)
   int  total_degree;//合計角度。自身の角度と親ノードの合計角度を合わせたもの

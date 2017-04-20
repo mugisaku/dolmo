@@ -44,7 +44,7 @@ current_button;
 
 
 uint32_t
-palette[4*5];
+palette[4*6];
 
 
 std::vector<Button>
@@ -79,7 +79,7 @@ open()
 
   bpp = surface->format->BytesPerPixel;
 
-    for(int  i = 0;  i < 20;   ++i)
+    for(int  i = 0;  i < 24;   ++i)
     {
       palette[i] = map_rgb(luminance_table[i]);
     }
