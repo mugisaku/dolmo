@@ -144,7 +144,7 @@ clear()
 
 
 void
-make_button(int  x, int  y, const char*  text, RootManager&  mgr, Callback  cb)
+make_button(int  x, int  y, const char*  text, SceneManager&  mgr, Callback  cb)
 {
   button_list.emplace_back(x,y,text,mgr,cb);
 }
@@ -272,7 +272,7 @@ put(const Renderer&  src)
 {
     for(int  y = 0;  y < height;  ++y){
     for(int  x = 0;  x <  width;  ++x){
-      auto   i = src.get_cell(x,y).color_index;
+      auto   i = src.get_cell(width-1-x,y).color_index;
 
         if(i)
         {

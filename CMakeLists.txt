@@ -49,9 +49,11 @@ set(SOURCES
   dolmo_node.cpp
   dolmo_node__table.cpp
   dolmo_model.cpp
-  dolmo_rootmanager.cpp
-  dolmo_rootmanager__callback.cpp
-  dolmo_rootmanager__save.cpp
+  dolmo_doll.cpp
+  dolmo_scene.cpp
+  dolmo_scenemanager.cpp
+  dolmo_scenemanager__callback.cpp
+  dolmo_scenemanager__save.cpp
 )
 
 

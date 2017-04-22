@@ -67,7 +67,7 @@ press(Renderer&  renderer, int  x, int  y)
 {
     if(!animation_flag)
     {
-      current_node = renderer.get_cell(x,y).nodeptr;
+      current_node = renderer.get_cell(screen::width-1-x,y).nodeptr;
 
                        current_point.assign(x,y);
       previous_point = current_point            ;
@@ -185,21 +185,6 @@ bool
 RootManager::
 render(Renderer&  dst, bool  force)
 {
-    if(force || needed_to_redraw)
-    {
-      auto  root = animation_flag? current_frame:current_root;
-
-      dst.clear();
-
-      (*root)->render(dst,z_max);
-
-      needed_to_redraw = false;
-
-      return true;
-    }
-
-
-  return false;
 }
 
 

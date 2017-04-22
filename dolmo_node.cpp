@@ -131,7 +131,7 @@ change_angle(const Point&  pt)
   else
     {
       double  y = -pt.y+(graph_center.y);
-      double  x =  pt.x-(graph_center.x);
+      double  x =  screen::width-pt.x-(graph_center.x);
 
         if((x != 0.0) &&
            (y != 0.0))

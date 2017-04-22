@@ -3,7 +3,7 @@
 
 
 #include<cstdint>
-#include"dolmo_rootmanager.hpp"
+#include"dolmo_scenemanager.hpp"
 
 
 using Callback = void(RootManager::*)();
@@ -36,7 +36,7 @@ void  unlock();
 
 void  clear();
 
-void   make_button(int  x, int  y, const char*  text, RootManager&  mgr, Callback  cb);
+void   make_button(int  x, int  y, const char*  text, SceneManager&  mgr, Callback  cb);
 bool  touch_button(int  x, int  y, bool  press=false);
 
 void  render_buttons();
