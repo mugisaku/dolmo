@@ -56,6 +56,11 @@ public:
   void  erase_this();
   void  start_to_animate();
 
+  std::pair<int,int>  get_numbers() const;
+
+  bool  test_animation_flag() const;
+
+  void  unset_animation_flag();
 
   void  move_pointer(int  x, int  y);
 
@@ -68,7 +73,7 @@ public:
   void  save_as_png(Renderer&  r, const char*  base);
 
   void  step();
-  void  render(Renderer&  dst, bool  force);
+  bool  render(Renderer&  dst, bool  force);
 
 };
 

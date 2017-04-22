@@ -47,30 +47,46 @@
     </style>
   </head>
   <body>
+    <hr/>
     <figure style="overflow:visible;" id="spinner"><div class="spinner"></div><center style="margin-top:0.5em"><strong>emscripten</strong></center></figure>
-    <table>
-    <tr>
-    <td>
-    二次元デジタルデッサン人形<br>
-    マウスで操作します<br>
-    ソースコードは<a href="https://github.com/mugisaku/dolmo">こちら</a><p>
-    </td>
-    <td>
     <div class="emscripten" id="status">Downloading...</div>
     <div class="emscripten">
       <progress value="0" max="100" id="progress" hidden=1></progress>  
     </div>
     <div class="emscripten_border">
+    <table>
+    <tr>
+    <td>
+    <h2>二次元デジタルデッサン人形</h2><br>
+    マウスで操作します<br>
+    右クリックで、メニュー表示切り替え、アニメーション中なら、それを解除<br><br>
+    ソースコードは<a href="https://github.com/mugisaku/dolmo">こちら</a><p>
+    </td>
+    </tr>
+    <tr>
+    <td>
       <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-    </div>
-    <div class="emscripten">
-    </div>
-    
-    <div class="emscripten" id="output"></div>
+    </td>
+    </tr>
+    <tr>
+    <td>
+    <a id="link" target="_blank">画像へのリンク</a>
     </td>
     </tr>
     </table>
-    <a href="../index.htm">return to home</a>
+    </div>
+    <hr/>
+    <div class="emscripten">
+      <input type="checkbox" id="resize">Resize canvas
+      <input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer
+      &nbsp;&nbsp;&nbsp;
+      <input type="button" value="Fullscreen" onclick="Module.requestFullScreen(document.getElementById('pointerLock').checked, 
+                                                                                document.getElementById('resize').checked)">
+    </div>
+    
+    <hr/>
+    <textarea class="emscripten" id="output" rows="8"></textarea>
+    <hr>
     <script type='text/javascript'>
       var statusElement = document.getElementById('status');
       var progressElement = document.getElementById('progress');
@@ -124,8 +140,8 @@
             text = m[1];
             progressElement.value = parseInt(m[2])*100;
             progressElement.max = parseInt(m[4])*100;
-            progressElement.hidden = true;
-            spinnerElement.hidden = true;
+            progressElement.hidden = false;
+            spinnerElement.hidden = false;
           } else {
             progressElement.value = null;
             progressElement.max = null;

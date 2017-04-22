@@ -3,12 +3,16 @@
 #include"dolmo_screen.hpp"
 #include<vector>
 
+#ifdef EMSCRIPTEN
+#include"emscripten.h"
+#endif
 
 
 
 RootManager::
 RootManager():
 z_max(z_max_max),
+current_index(0),
 last_time(0),
 copy_node(nullptr),
 needed_to_redraw(true)
@@ -23,16 +27,36 @@ needed_to_redraw(true)
 
 
 
+std::pair<int,int>
+RootManager::
+get_numbers() const
+{
+  return std::make_pair(current_index,root_list.size());
+}
+
+
+bool
+RootManager::
+test_animation_flag() const
+{
+  return animation_flag;
+}
+
+
+void
+RootManager::
+unset_animation_flag()
+{
+  animation_flag = false;
+
+  needed_to_redraw = true;
+}
+
+
 void
 RootManager::
 move_pointer(int  x, int  y)
 {
-    if(screen::touch_button(x,y,false))
-    {
-      needed_to_redraw = true;
-    }
-
-
   current_point.assign(x,y);
 }
 
@@ -41,22 +65,12 @@ void
 RootManager::
 press(Renderer&  renderer, int  x, int  y)
 {
-    if(animation_flag)
+    if(!animation_flag)
     {
-      animation_flag = false;
+      current_node = renderer.get_cell(x,y).nodeptr;
 
-      needed_to_redraw = true;
-    }
-
-  else
-    {
-        if(!screen::touch_button(x,y,true))
-        {
-          current_node = renderer.get_cell(x,y).nodeptr;
-
-                           current_point.assign(x,y);
-          previous_point = current_point            ;
-        }
+                       current_point.assign(x,y);
+      previous_point = current_point            ;
     }
 }
 
@@ -159,13 +173,15 @@ load(const char*  s)
           current_node = nullptr;
           current_root = root_list.begin();
 
+          current_index = 0;
+
           needed_to_redraw = true;
         }
     }
 }
 
 
-void
+bool
 RootManager::
 render(Renderer&  dst, bool  force)
 {
@@ -173,20 +189,17 @@ render(Renderer&  dst, bool  force)
     {
       auto  root = animation_flag? current_frame:current_root;
 
-      screen::clear();
-
       dst.clear();
 
       (*root)->render(dst,z_max);
 
-      screen::put(dst);
-
-      screen::put(current_index+1,root_list.size(),0,0);
-
-      screen::update(!animation_flag);
-
       needed_to_redraw = false;
+
+      return true;
     }
+
+
+  return false;
 }
 
 

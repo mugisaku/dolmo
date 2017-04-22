@@ -20,7 +20,7 @@ set(CMAKE_C_COMPILER  gcc)
 set(CMAKE_C_FLAGS   "-std=c14 -Werror")
 set(CMAKE_CXX_COMPILER  g++)
 set(CMAKE_CXX_FLAGS "-std=c++14 -Werror")
-set(CMAKE_CXX_LINK_FLAGS  "-lstdc++ -lz -lpng -lSDL2 -lSDL2main -lSDL2_image")
+set(CMAKE_CXX_LINK_FLAGS  "-lstdc++ -lz -lpng -lSDL2 -lSDL2main")
 
 
 set(CMAKE_C_FLAGS_RELEASE   "${CMAKE_C_FLAGS}   -O2 -march=core2 -fomit-frame-pointer")
@@ -34,7 +34,7 @@ if(EMSCRIPTEN)
   set(CMAKE_CXX_COMPILER  em++)
   set(CMAKE_CXX_FLAGS "-std=c++14 -Werror -Wno-switch -O2")
   set(CMAKE_CXX_FLAGS_DEBUG "")
-  set(CMAKE_CXX_LINK_FLAGS  "${CMAKE_CXX_LINK_FLAGS} -s USE_SDL=2")
+  set(CMAKE_CXX_LINK_FLAGS  "${CMAKE_CXX_LINK_FLAGS} -s USE_LIBPNG=1 -s USE_SDL=2 --preload-file dolmo_parts.png  --use-preload-plugins")
 endif()
 
 
@@ -57,12 +57,11 @@ set(SOURCES
 
 include_directories(.)
 include_directories(/usr/include/SDL2)
-add_executable("png2src${EXECUTABLE_EXTENSION}" png2src_main.cpp)
 add_executable("Dolmo${EXECUTABLE_EXTENSION}" dolmo.cpp ${SOURCES})
 
 
 if(EMSCRIPTEN)
-  set_target_properties("Dolmo${EXECUTABLE_EXTENSION}" PROPERTIES LINK_FLAGS "--shell-file shell.html")
+ set_target_properties("Dolmo${EXECUTABLE_EXTENSION}" PROPERTIES LINK_FLAGS "--shell-file shell.html")
 endif()
 
 

@@ -64,7 +64,8 @@ put(int  color_index, Node*  nodeptr, int  x, int  y)
 
         if(!cell.color_index || (cell.z < z))
         {
-          cell.color_index = color_index|(z<<2);
+          cell.color_index = (3*z)+color_index;
+
           cell.z           = z;
           cell.nodeptr     = nodeptr;
         }

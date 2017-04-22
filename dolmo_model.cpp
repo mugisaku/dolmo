@@ -30,7 +30,7 @@ make_arm(Node*  bust, int  z)
 Node*
 make_leg(Node*  waist, int  z)
 {
-  auto  thigh = waist->join(new Node("大腿",z,Rect(u*7,0,u,u),Point(32,8)),0, 0);
+  auto  thigh = waist->join(new Node("大腿",z,Rect(u*7,0,u,u),Point(32,8)),0,6);
   auto   shin = thigh->join(new Node(  "脛",z,Rect(u*8,0,u,u),Point(32,8)),0,64); 
   auto   foot =  shin->join(new Node(  "足",z,Rect(u*9,0,u,u),Point(32,8)),0,64);
 
@@ -41,7 +41,7 @@ make_leg(Node*  waist, int  z)
 void
 make()
 {
-  auto  root = new Node(screen::width/2,screen::width/2-64);
+  auto  root = new Node(screen::width/2,screen::width/2-32);
 
   auto     head =    root->join(new Node("頭",2,Rect(u*0,0,u,u),Point(32,56)),0, 0);
   auto     bust =    head->join(new Node("胸",2,Rect(u*1,0,u,u),Point(32, 8)),0, 8);

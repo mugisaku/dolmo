@@ -43,19 +43,21 @@ save_as_png(Renderer&  renderer, const char*  base)
     }
 
 
-  png_color  png_palette[21];
+  png_color  png_palette[luminance_table_size+1];
 
-    for(int  i = 0;  i < 20;  ++i)
+    for(int  i = 0;  i < luminance_table_size;  ++i)
     {
-      set(png_palette[i],screen::luminance_table[i]);
+      set(png_palette[i],luminance_table[i]);
     }
 
 
-  png_palette[0].blue = 255;
+  png_palette[0].red   =   0;
+  png_palette[0].green =   0;
+  png_palette[0].blue  = 255;
 
-  png_palette[20].red   = 255;
-  png_palette[20].green =   0;
-  png_palette[20].blue  =   0;
+  png_palette[luminance_table_size].red   = 255;
+  png_palette[luminance_table_size].green =   0;
+  png_palette[luminance_table_size].blue  =   0;
 
   png_structp  png = png_create_write_struct(PNG_LIBPNG_VER_STRING,nullptr,nullptr,nullptr);
 
@@ -78,7 +80,7 @@ save_as_png(Renderer&  renderer, const char*  base)
                PNG_COMPRESSION_TYPE_DEFAULT,
                PNG_FILTER_TYPE_DEFAULT);
 
-  png_set_PLTE(png,png_info,png_palette,20);
+  png_set_PLTE(png,png_info,png_palette,luminance_table_size+1);
 
   png_write_info(png,png_info);
 
@@ -102,15 +104,15 @@ save_as_png(Renderer&  renderer, const char*  base)
             }
 
 
-          buffer[(cv_w*y)+(x_base        )] = 20;
-          buffer[(cv_w*y)+(x_base+ren_w-1)] = 20;
+          buffer[(cv_w*y)+(x_base        )] = luminance_table_size;
+          buffer[(cv_w*y)+(x_base+ren_w-1)] = luminance_table_size;
         }
 
 
         for(int  x = 0;  x < ren_w;  ++x)
         {
-          buffer[                 (x_base+x)] = 20;
-          buffer[(cv_w*(ren_h-1))+(x_base+x)] = 20;
+          buffer[                 (x_base+x)] = luminance_table_size;
+          buffer[(cv_w*(ren_h-1))+(x_base+x)] = luminance_table_size;
         }
 
 

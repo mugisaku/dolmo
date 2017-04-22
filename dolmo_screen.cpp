@@ -1,9 +1,15 @@
 #include"dolmo_screen.hpp"
 #include"dolmo_node.hpp"
 #include"dolmo_font.hpp"
+#include"dolmo_renderer.hpp"
 #include<SDL.h>
 #include<vector>
 #include<cstring>
+
+
+#ifdef EMSCRIPTEN
+#include"emscripten.h"
+#endif
 
 
 
@@ -44,11 +50,19 @@ current_button;
 
 
 uint32_t
-palette[4*6];
+palette[luminance_table_size];
+
+
+uint32_t
+yellow;
 
 
 std::vector<Button>
 button_list;
+
+
+bool
+needed_to_redraw;
 
 
 uint32_t
@@ -79,7 +93,9 @@ open()
 
   bpp = surface->format->BytesPerPixel;
 
-    for(int  i = 0;  i < 24;   ++i)
+  yellow = SDL_MapRGB(surface->format,0xFF,0xFF,0x00);
+
+    for(int  i = 0;  i < luminance_table_size;   ++i)
     {
       palette[i] = map_rgb(luminance_table[i]);
     }
@@ -101,6 +117,20 @@ close()
   SDL_DestroyWindow(window);
 
   SDL_Quit();
+}
+
+
+void
+lock()
+{
+  SDL_LockSurface(surface);
+}
+
+
+void
+unlock()
+{
+  SDL_UnlockSurface(surface);
 }
 
 
@@ -129,7 +159,8 @@ touch_button(int  x, int  y, bool  press)
     {
         if(btn.test(pt))
         {
-          current_button = &btn;
+          auto  old = current_button       ;
+                      current_button = &btn;
 
             if(press)
             {
@@ -137,17 +168,21 @@ touch_button(int  x, int  y, bool  press)
             }
 
 
-          return true;
+          return(old != current_button);
         }
     }
 
 
-  current_button = nullptr;
+    if(current_button)
+    {
+      current_button = nullptr;
+
+      return true;
+    }
+
 
   return false;
 }
-
-
 
 
 void
@@ -165,7 +200,7 @@ put_color(uint32_t  color, int  x, int  y)
 
 
 void
-render(const Glyph&  gl, int  x, int  y)
+render(const Glyph&  gl, uint32_t  color, int  x, int  y)
 {
   const uint8_t*  p = gl.data;
 
@@ -180,10 +215,10 @@ render(const Glyph&  gl, int  x, int  y)
               int  xxx = x+(xx*2);
               int  yyy = y+(yy*2);
 
-              put_color(0xFFFFFFFF,xxx  ,yyy  );
-              put_color(0xFFFFFFFF,xxx+1,yyy  );
-              put_color(0xFFFFFFFF,xxx  ,yyy+1);
-              put_color(0xFFFFFFFF,xxx+1,yyy+1);
+              put_color(color,xxx  ,yyy  );
+              put_color(color,xxx+1,yyy  );
+              put_color(color,xxx  ,yyy+1);
+              put_color(color,xxx+1,yyy+1);
             }
 
 
@@ -201,22 +236,22 @@ render(int  d, int  x, int  y)
 
     if(i10)
     {
-      render(get_glyph(i10+'0'),x,y);
+      render(get_glyph(i10+'0'),0xFFFFFFFF,x,y);
     }
 
 
-  render(get_glyph(i1+'0'),x+16,y);
+  render(get_glyph(i1+'0'),0xFFFFFFFF,x+16,y);
 }
 
 
 void
-put(const char*  s, int  x, int  y)
+put(const char*  s, uint32_t  color, int  x, int  y)
 {
     while(*s)
     {
       auto  c = *s++;
 
-      render(get_glyph(c),x,y);
+      render(get_glyph(c),color,x,y);
 
       x += 16;
     }
@@ -226,9 +261,9 @@ put(const char*  s, int  x, int  y)
 void
 put(int  cur, int  max, int  x, int  y)
 {
-  render(           cur,x   ,y);
-  render(get_glyph('/'),x+32,y);
-  render(           max,x+48,y);
+  render(           cur,           x   ,y);
+  render(get_glyph('/'),0xFFFFFFFF,x+32,y);
+  render(           max,           x+48,y);
 }
 
 
@@ -248,19 +283,30 @@ put(const Renderer&  src)
 
 
 void
-update(bool  show_menu)
+render_buttons()
 {
-    if(show_menu)
+    for(auto&  btn: button_list)
     {
-        for(auto&  btn: button_list)
-        {
-          put(btn.text,btn.x,btn.y);
-        }
+      auto  flag = (current_button == &btn);
+
+      put(btn.text,flag? yellow:0xFFFFFFFF,btn.x,btn.y);
     }
+}
 
 
-
+void
+update()
+{
   SDL_UpdateWindowSurface(window);
+
+
+#ifdef EMSCRIPTEN
+  emscripten_run_script(
+  "var  cv = document.getElementById(\"canvas\");"
+  "var  ln = document.getElementById(\"link\");"
+  "ln.href = cv.toDataURL();"
+  );
+#endif
 }
 
 

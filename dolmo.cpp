@@ -2,7 +2,6 @@
 #include"dolmo_screen.hpp"
 #include"dolmo_image.hpp"
 #include"dolmo_model.hpp"
-#include"dolmo_rootmanager.hpp"
 #include<cstdlib>
 #include<string>
 
@@ -15,28 +14,91 @@
 namespace{
 
 
+RootManager
+mgr;
+
+
 Renderer
 renderer(screen::width,screen::height);
 
 
-RootManager
-mgr;
+bool
+hide_menu;
+
+
+void
+render(bool  ok)
+{
+    if(ok)
+    {
+      screen::lock();
+
+      screen::clear();
+
+      screen::put(renderer);
+
+        if(!hide_menu && !mgr.test_animation_flag())
+        {
+          auto  ns = mgr.get_numbers();
+
+          screen::put(ns.first+1,ns.second,0,0);
+
+          screen::render_buttons();
+        }
+
+
+      screen::unlock();
+
+
+      screen::update();
+    }
+}
 
 
 void
 process_button(const SDL_MouseButtonEvent&  evt)
 {
-  mgr.press(renderer,evt.x,evt.y);
+    if(evt.button == SDL_BUTTON_LEFT)
+    {
+        if(hide_menu || !screen::touch_button(evt.x,evt.y,true))
+        {
+          mgr.press(renderer,evt.x,evt.y);
+        }
+    }
+
+  else
+    if(evt.button == SDL_BUTTON_RIGHT)
+    {
+        if(mgr.test_animation_flag())
+        {
+          mgr.unset_animation_flag();
+        }
+
+      else
+        {
+          hide_menu = !hide_menu;
+        }
+
+
+      render(true);
+    }
 }
 
 
 void
 process_motion(const SDL_MouseMotionEvent&  evt)
 {
+    if(!hide_menu)
+    {
+      render(screen::touch_button(evt.x,evt.y,false));
+    }
+
+
   mgr.move_pointer(evt.x,evt.y);
 }
 
 
+#ifndef EMSCRIPTEN
 void
 load(char*  path)
 {
@@ -68,6 +130,7 @@ load(char*  path)
 
   SDL_free(path);
 }
+#endif
 
 
 void
@@ -79,23 +142,15 @@ main_loop()
     {
         switch(evt.type)
         {
+#ifndef EMSCRIPTEN
       case(SDL_DROPFILE):
           load(evt.drop.file);
           break;
       case(SDL_WINDOWEVENT):
             if(evt.window.event == SDL_WINDOWEVENT_EXPOSED)
             {
-              mgr.render(renderer,true);
+              render(mgr.render(renderer,true));
             }
-          break;
-      case(SDL_MOUSEBUTTONDOWN):
-          process_button(evt.button);
-          break;
-      case(SDL_MOUSEBUTTONUP):
-          mgr.unpress();
-          break;
-      case(SDL_MOUSEMOTION):
-          process_motion(evt.motion);
           break;
       case(SDL_KEYDOWN):
             if(evt.key.keysym.sym == SDLK_SPACE)
@@ -117,12 +172,23 @@ main_loop()
           screen::close();
           quick_exit(EXIT_SUCCESS);
           break;
+#endif
+      case(SDL_MOUSEBUTTONDOWN):
+          process_button(evt.button);
+          break;
+      case(SDL_MOUSEBUTTONUP):
+          mgr.unpress();
+          break;
+      case(SDL_MOUSEMOTION):
+          process_motion(evt.motion);
+          break;
         }
     }
 
 
   mgr.step();
-  mgr.render(renderer,false);
+
+  render(mgr.render(renderer,false));
 }
 
 
@@ -151,6 +217,7 @@ main(int  argc, char**  argv)
   screen::make_button(0,y,"erase this",mgr,&RootManager::erase_this);  y += 20;
   screen::make_button(0,y,"animate",mgr,&RootManager::start_to_animate);  y += 20;
 
+  render(true);
 
 #ifdef EMSCRIPTEN
   emscripten_set_main_loop(main_loop,-1,false);
