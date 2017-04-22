@@ -20,6 +20,19 @@ need_to_redraw()
 }
 
 
+void
+Scene::
+update()
+{
+  doll_list.sort([](const Doll*  a, const Doll*  b){return(a->get_z_value() < b->get_z_value());});
+
+    for(auto  doll: doll_list)
+    {
+      doll->update();
+    }
+}
+
+
 bool
 Scene::
 render(Renderer&  dst, bool  force)
@@ -27,8 +40,6 @@ render(Renderer&  dst, bool  force)
     if(force || needed_to_redraw)
     {
       dst.clear();
-
-      doll_list.sort([](const Doll*  a, const Doll*  b){return(a->get_z_value() < b->get_z_value());});
 
         for(auto  doll: doll_list)
         {
@@ -43,6 +54,28 @@ render(Renderer&  dst, bool  force)
 
 
   return false;
+}
+
+
+void
+Scene::
+fprint(FILE*  f) const
+{
+    for(auto  doll: doll_list)
+    {
+      doll->fprint(f);
+    }
+}
+
+
+const char*
+Scene::
+sscan(const char*  s)
+{
+    for(auto  doll: doll_list)
+    {
+      s = doll->sscan(s);
+    }
 }
 
 

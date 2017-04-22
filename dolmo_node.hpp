@@ -9,7 +9,6 @@
 #include<SDL.h>
 #include<SDL_image.h>
 #include"dolmo_rectangle.hpp"
-#include"dolmo_renderer.hpp"
 
 
 
@@ -31,7 +30,10 @@ JoiningKind
 };
 
 
-struct
+struct Renderer;
+
+
+class
 Node
 {
   static const double  sin_value_table[];
@@ -63,10 +65,19 @@ Node
   double           cos_value;
   double  reversed_cos_value;
 
-  Node(int  x, int  y);
+public:
+  Node(int  x=0, int  y=0);
   Node(const char*  name_, int  z, Rect&&  img_rect, Point&&  img_center_);
   Node(const Node&  rhs) noexcept;
+ ~Node();
 
+
+  Node&  operator=(const Node&  rhs) noexcept;
+
+  int  get_z_value() const;
+
+  void  fix_angle();
+  void  change_degree(int  v);
 
   void  reform(const Node&  rhs);
 
@@ -80,8 +91,8 @@ Node
   void  render_image(Renderer&  dst);
   void  render(Renderer&  dst, int  z_max);
 
-  const char*   sscan(const char*  s);
   void  fprint(FILE*  f) const;
+  const char*   sscan(const char*  s);
 
   void  print() const;
 

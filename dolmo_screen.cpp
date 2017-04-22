@@ -30,11 +30,11 @@ Button: public  Rect
 {
   const char*  text;
 
-  RootManager&  manager;
+  SceneManager&  manager;
 
   Callback  callback;
 
-  Button(int  x_, int  y_, const char*  text_, RootManager&  mgr, Callback  cb):
+  Button(int  x_, int  y_, const char*  text_, SceneManager&  mgr, Callback  cb):
   Rect(x_,y_,16*std::strlen(text_),16),
   text(text_),
   manager(mgr),

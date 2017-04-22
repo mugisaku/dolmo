@@ -48,13 +48,13 @@ make()
   auto  abdomen =    bust->join(new Node("腹",2,Rect(u*2,0,u,u),Point(32,32)),0,56);
   auto    waist = abdomen->join(new Node("腰",2,Rect(u*3,0,u,u),Point(32,32)),0,32);
 
-  waist->angle_fixed = true;
+  waist->fix_angle();
 
-  make_arm(bust,4)->own_degree =  18;
-  make_arm(bust,0)->own_degree = -18;
+  make_arm(bust,4)->change_degree(18);
+  make_arm(bust,0)->change_degree(-18);
 
-  make_leg(waist,3)->own_degree =  18;
-  make_leg(waist,1)->own_degree = -18;
+  make_leg(waist,3)->change_degree( 18);
+  make_leg(waist,1)->change_degree(-18);
 
 
   model = root;

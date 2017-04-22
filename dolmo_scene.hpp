@@ -4,11 +4,7 @@
 
 #include<list>
 #include<vector>
-#include"dolmo_node.hpp"
-#include"dolmo_renderer.hpp"
-
-
-struct Doll;
+#include"dolmo_doll.hpp"
 
 
 class
@@ -25,7 +21,12 @@ public:
 
   void  need_to_redraw();
 
+  void  update();
+
   bool  render(Renderer&  dst, bool  force);
+
+  void  fprint(FILE*  f) const;
+  const char*  sscan(const char*  s);
 
 };
 

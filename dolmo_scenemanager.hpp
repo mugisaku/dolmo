@@ -1,21 +1,14 @@
-#ifndef DOLMO_ROOTMANAGER_HPP_INCLUDED
-#define DOLMO_ROOTMANAGER_HPP_INCLUDED
+#ifndef DOLMO_SCENEMANAGER_HPP_INCLUDED
+#define DOLMO_SCENEMANAGER_HPP_INCLUDED
 
 
-#include<list>
-#include<vector>
-#include"dolmo_node.hpp"
-#include"dolmo_renderer.hpp"
+#include"dolmo_scene.hpp"
 
 
 class
-RootManager
+SceneManager
 {
   static constexpr int  z_max_max = 4;
-
-  static std::vector<Node*>  trash;
-
-  static Node*  raise_node();
 
 
   Node*  current_node;
@@ -31,18 +24,18 @@ RootManager
   uint32_t  last_time;
 
 
-  using List = std::list<Node*>;
+  using List = std::list<Scene*>;
 
-  List  root_list;
+  List  scene_list;
 
-  List::iterator         current_root;
+  List::iterator        current_scene;
   List::const_iterator  current_frame;
 
   bool  animation_flag;
   bool  needed_to_redraw;
 
 public:
-  RootManager();
+  SceneManager();
 
 
   void  increase_z_max();
@@ -67,9 +60,9 @@ public:
   void    press(Renderer&  renderer, int  x, int  y);
   void  unpress(                                   );
 
-  void  fprint(FILE*  f) const;
+  void         fprint(FILE*  f) const;
+  const char*  sscan(const char*  s);
 
-  void  load(const char*  s);
   void  save_as_png(Renderer&  r, const char*  base);
 
   void  step();

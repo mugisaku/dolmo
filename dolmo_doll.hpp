@@ -27,7 +27,12 @@ public:
 
   int  get_z_value() const;
 
+  void  update();
+
   void  render(Renderer&  dst, int  z_max) const;
+
+  void  fprint(FILE*  f) const;
+  const char*   sscan(const char*  s);
 
 };
 

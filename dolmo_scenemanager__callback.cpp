@@ -1,4 +1,4 @@
-#include"dolmo_rootmanager.hpp"
+#include"dolmo_scenemanager.hpp"
 #include"dolmo_model.hpp"
 #include"dolmo_screen.hpp"
 
@@ -6,7 +6,7 @@
 
 
 void
-RootManager::
+SceneManager::
 increase_z_max()
 {
     if(z_max < z_max_max)
@@ -19,7 +19,7 @@ increase_z_max()
 
 
 void
-RootManager::
+SceneManager::
 decrease_z_max()
 {
     if(z_max)
@@ -32,14 +32,13 @@ decrease_z_max()
 
 
 void
-RootManager::
+SceneManager::
 change_to_previous()
 {
     if(current_index)
     {
       --current_index;
-
-      --current_root;
+      --current_scene;
 
       needed_to_redraw = true;
     }
@@ -47,14 +46,13 @@ change_to_previous()
 
 
 void
-RootManager::
+SceneManager::
 change_to_next()
 {
-    if(current_index < (root_list.size()-1))
+    if(current_index < (scene_list.size()-1))
     {
       ++current_index;
-
-      ++current_root;
+      ++current_scene;
 
       needed_to_redraw = true;
     }
@@ -62,16 +60,12 @@ change_to_next()
 
 
 void
-RootManager::
+SceneManager::
 insert_new_to_previous()
 {
-    if(root_list.size() < 98)
+    if(scene_list.size() < 98)
     {
-      auto  root = raise_node();
-
-      root->update();
-
-      root_list.emplace(current_root,root);
+      scene_list.emplace(current_scene,new Scene);
 
       ++current_index;
 
@@ -81,18 +75,14 @@ insert_new_to_previous()
 
 
 void
-RootManager::
+SceneManager::
 insert_new_to_next()
 {
-    if(root_list.size() < 98)
+    if(scene_list.size() < 98)
     {
-      auto  root = raise_node();
+      auto  it = current_scene;
 
-      auto  it = current_root;
-
-      root->update();
-
-      root_list.emplace(++it,root);
+      scene_list.emplace(++it,new Scene);
 
       needed_to_redraw = true;
     }
@@ -100,27 +90,27 @@ insert_new_to_next()
 
 
 void
-RootManager::
+SceneManager::
 copy_this()
 {
     if(!copy_node)
     {
-      copy_node = raise_node();
+//      copy_node = new Scene;
     }
 
 
-  copy_node->reform(**current_root);
+//  copy_node->reform(**current_scene);
 }
 
 
 void
-RootManager::
+SceneManager::
 apply_copy()
 {
     if(copy_node)
     {
-      (*current_root)->reform(*copy_node);
-      (*current_root)->update();
+//      (*current_scene)->reform(*copy_node);
+      (*current_scene)->update();
 
       needed_to_redraw = true;
     }
@@ -128,19 +118,19 @@ apply_copy()
 
 
 void
-RootManager::
+SceneManager::
 erase_this()
 {
-    if(root_list.size() > 1)
+    if(scene_list.size() > 1)
     {
-      trash.emplace_back(*current_root);
+      delete *current_scene;
 
-      current_root = root_list.erase(current_root);
+      current_scene = scene_list.erase(current_scene);
 
-        if(current_root == root_list.end())
+        if(current_scene == scene_list.end())
         {
           --current_index;
-          --current_root;
+          --current_scene;
         }
 
 
@@ -150,12 +140,12 @@ erase_this()
 
 
 void
-RootManager::
+SceneManager::
 start_to_animate()
 {
   animation_flag = true;
 
-  current_frame = root_list.cbegin();
+  current_frame = scene_list.cbegin();
 
   needed_to_redraw = true;
 }

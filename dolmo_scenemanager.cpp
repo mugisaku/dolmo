@@ -1,7 +1,8 @@
-#include"dolmo_rootmanager.hpp"
+#include"dolmo_scenemanager.hpp"
 #include"dolmo_model.hpp"
 #include"dolmo_screen.hpp"
 #include<vector>
+
 
 #ifdef EMSCRIPTEN
 #include"emscripten.h"
@@ -9,34 +10,35 @@
 
 
 
-RootManager::
-RootManager():
+
+SceneManager::
+SceneManager():
 z_max(z_max_max),
 current_index(0),
 last_time(0),
 copy_node(nullptr),
 needed_to_redraw(true)
 {
-  root_list.emplace_back(new Node(get_model()));
+  scene_list.emplace_back(new Scene);
 
-  current_root = root_list.begin();
+  current_scene = scene_list.begin();
 
-  (*current_root)->update();
+  (*current_scene)->update();
 }
 
 
 
 
 std::pair<int,int>
-RootManager::
+SceneManager::
 get_numbers() const
 {
-  return std::make_pair(current_index,root_list.size());
+  return std::make_pair(current_index,scene_list.size());
 }
 
 
 bool
-RootManager::
+SceneManager::
 test_animation_flag() const
 {
   return animation_flag;
@@ -44,7 +46,7 @@ test_animation_flag() const
 
 
 void
-RootManager::
+SceneManager::
 unset_animation_flag()
 {
   animation_flag = false;
@@ -54,7 +56,7 @@ unset_animation_flag()
 
 
 void
-RootManager::
+SceneManager::
 move_pointer(int  x, int  y)
 {
   current_point.assign(x,y);
@@ -62,7 +64,7 @@ move_pointer(int  x, int  y)
 
 
 void
-RootManager::
+SceneManager::
 press(Renderer&  renderer, int  x, int  y)
 {
     if(!animation_flag)
@@ -76,52 +78,22 @@ press(Renderer&  renderer, int  x, int  y)
 
 
 void
-RootManager::
+SceneManager::
 unpress()
 {
   current_node = nullptr;
 }
 
 
-std::vector<Node*>
-RootManager::
-trash;
-
-
-Node*
-RootManager::
-raise_node()
-{
-  Node*  ptr;
-
-    if(trash.size())
-    {
-      ptr = trash.back();
-
-      trash.pop_back();
-    }
-
-  else
-    {
-      ptr = new Node(get_model());
-    }
-
-
-  return ptr;
-}
-
-
-
-
 void
-RootManager::
+SceneManager::
 fprint(FILE*  f) const
 {
-  fprintf(f,"%d,\n",root_list.size());
+  fprintf(f,"%d,\n",scene_list.size());
 
-    for(auto  root: root_list)
+    for(auto  scene: scene_list)
     {
-      root->fprint(f);
+      scene->fprint(f);
 
       fprintf(f,"\n");
     }
@@ -131,13 +103,13 @@ fprint(FILE*  f) const
 }
 
 
-void
-RootManager::
-load(const char*  s)
+const char*
+SceneManager::
+sscan(const char*  s)
 {
     if(animation_flag)
     {
-      return;
+      return nullptr;
     }
 
 
@@ -150,46 +122,30 @@ load(const char*  s)
         {
           s += n;
 
-            for(auto  root: root_list)
-            {
-              trash.emplace_back(root);
-            }
-
-
-          root_list.clear();
-
-            while(d--)
-            {
-              auto  root = raise_node();
-
-              s = root->sscan(s);
-
-              root->update();
-
-              root_list.emplace_back(root);
-            }
-
 
           current_node = nullptr;
-          current_root = root_list.begin();
+          current_scene = scene_list.begin();
 
           current_index = 0;
 
           needed_to_redraw = true;
         }
     }
+
+
+  return nullptr;
 }
 
 
 bool
-RootManager::
+SceneManager::
 render(Renderer&  dst, bool  force)
 {
 }
 
 
 void
-RootManager::
+SceneManager::
 step()
 {
     if(animation_flag)
@@ -200,9 +156,9 @@ step()
         {
           last_time = now;
 
-            if(++current_frame == root_list.cend())
+            if(++current_frame == scene_list.cend())
             {
-              current_frame = root_list.cbegin();
+              current_frame = scene_list.cbegin();
             }
 
 

@@ -10,8 +10,6 @@ int
 reporting_count;
 
 
-
-
 Node::
 Node(int  x, int  y):
 name("root"),
@@ -38,24 +36,71 @@ angle_fixed(false)
 
 
 Node::
-Node(const Node&  rhs) noexcept:
-name(rhs.name),
-joining_kind(rhs.joining_kind),
-z_value(rhs.z_value),
-parent(rhs.parent),
-image_rect(rhs.image_rect),
-image_center(rhs.image_center),
-own_degree(rhs.own_degree),
-base_offset(rhs.base_offset),
-angle_fixed(rhs.angle_fixed)
+Node(const Node&  rhs) noexcept
 {
-    for(auto  child: rhs.children)
+  *this = rhs;
+}
+
+
+Node::
+~Node()
+{
+    for(auto  child: children)
     {
-      join(new Node(*child));
+      delete child;
     }
 }
 
 
+
+
+Node&
+Node::
+operator=(const Node&  rhs) noexcept
+{
+  name         = rhs.name;
+  joining_kind = rhs.joining_kind;
+  z_value      = rhs.z_value;
+  image_rect   = rhs.image_rect;
+  image_center = rhs.image_center;
+  own_degree   = rhs.own_degree;
+  base_offset  = rhs.base_offset;
+  angle_fixed  = rhs.angle_fixed;
+
+    for(auto  child: rhs.children)
+    {
+      join(new Node(*child));
+    }
+
+
+  return *this;
+}
+
+
+
+
+int
+Node::
+get_z_value() const
+{
+  return z_value;
+}
+
+
+void
+Node::
+fix_angle()
+{
+  angle_fixed = true;
+}
+
+
+void
+Node::
+change_degree(int  v)
+{
+  own_degree = v;
+}
 
 
 void

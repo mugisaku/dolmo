@@ -6,7 +6,7 @@
 #include"dolmo_scenemanager.hpp"
 
 
-using Callback = void(RootManager::*)();
+using Callback = void(SceneManager::*)();
 
 
 constexpr int  luminance_table_size = 15;

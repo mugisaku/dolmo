@@ -1,4 +1,4 @@
-#include"dolmo_rootmanager.hpp"
+#include"dolmo_scenemanager.hpp"
 #include"dolmo_screen.hpp"
 #include<cstring>
 #include<cstdio>
@@ -25,7 +25,7 @@ set(png_color&  target, uint8_t  l)
 
 
 void
-RootManager::
+SceneManager::
 save_as_png(Renderer&  renderer, const char*  base)
 {
 #ifndef EMSCRIPTEN
@@ -69,7 +69,7 @@ save_as_png(Renderer&  renderer, const char*  base)
   const int  ren_w = renderer.get_width();
   const int  ren_h = renderer.get_height();
 
-  const int  cv_w = ren_w*root_list.size();
+  const int  cv_w = ren_w*scene_list.size();
 
 
   png_set_compression_level(png,Z_BEST_COMPRESSION);
@@ -90,11 +90,11 @@ save_as_png(Renderer&  renderer, const char*  base)
 
   int  x_base = 0;
 
-    for(auto  root: root_list)
+    for(auto  scene: scene_list)
     {
       renderer.clear();
 
-      root->render(renderer,z_max_max);
+      scene->render(renderer,z_max_max);
 
         for(int  y = 0;  y < ren_h;  ++y)
         {

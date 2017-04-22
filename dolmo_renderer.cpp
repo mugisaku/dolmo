@@ -60,7 +60,7 @@ put(int  color_index, Node*  nodeptr, int  x, int  y)
     {
       auto&  cell = table[width*y+x];
 
-      auto  z = nodeptr->z_value;
+      auto  z = nodeptr->get_z_value();
 
         if(!cell.color_index || (cell.z < z))
         {
