@@ -1,6 +1,7 @@
 #include"dolmo_scenemanager.hpp"
 #include"dolmo_model.hpp"
 #include"dolmo_screen.hpp"
+#include"dolmo_renderer.hpp"
 #include<vector>
 
 
@@ -141,6 +142,20 @@ bool
 SceneManager::
 render(Renderer&  dst, bool  force)
 {
+    if(needed_to_redraw || force)
+    {
+      dst.clear();
+
+      (*current_scene)->render(dst,z_max);
+
+
+      needed_to_redraw = false;
+
+      return true;
+    }
+
+
+  return false;
 }
 
 

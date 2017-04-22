@@ -5,10 +5,8 @@
 #include<list>
 #include<vector>
 #include"dolmo_node.hpp"
+#include"dolmo_scene.hpp"
 #include"dolmo_renderer.hpp"
-
-
-struct Scene;
 
 
 class
@@ -22,8 +20,10 @@ Doll
 
   int  z_value;
 
+  friend Doll*  Scene::join(Doll*  doll);
+
 public:
-  Doll(Scene*  scn=nullptr);
+  Doll(Node*  root=nullptr);
 
   int  get_z_value() const;
 

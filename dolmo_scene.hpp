@@ -4,7 +4,11 @@
 
 #include<list>
 #include<vector>
-#include"dolmo_doll.hpp"
+#include<cstdio>
+
+
+struct Doll;
+struct Renderer;
 
 
 class
@@ -12,18 +16,14 @@ Scene
 {
   std::list<Doll*>  doll_list;
 
-  int  z_max;
-
-  bool  needed_to_redraw;
-
 public:
   Scene();
 
-  void  need_to_redraw();
+  Doll*  join(Doll*  doll);
 
   void  update();
 
-  bool  render(Renderer&  dst, bool  force);
+  void  render(Renderer&  dst, int  z_max);
 
   void  fprint(FILE*  f) const;
   const char*  sscan(const char*  s);

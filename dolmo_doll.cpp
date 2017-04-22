@@ -4,11 +4,11 @@
 
 
 Doll::
-Doll(Scene*  scn):
-scene(scn),
+Doll(Node*  root):
+scene(nullptr),
 reverse_flag(false),
 z_value(0),
-root_node(nullptr)
+root_node(root)
 {
 }
 

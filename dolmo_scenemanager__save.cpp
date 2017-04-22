@@ -1,5 +1,6 @@
 #include"dolmo_scenemanager.hpp"
 #include"dolmo_screen.hpp"
+#include"dolmo_renderer.hpp"
 #include<cstring>
 #include<cstdio>
 

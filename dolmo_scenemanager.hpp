@@ -3,6 +3,7 @@
 
 
 #include"dolmo_scene.hpp"
+#include"dolmo_node.hpp"
 
 
 class

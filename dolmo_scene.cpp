@@ -1,5 +1,6 @@
 #include"dolmo_scene.hpp"
 #include"dolmo_doll.hpp"
+#include"dolmo_model.hpp"
 
 
 
@@ -7,16 +8,23 @@
 Scene::
 Scene()
 {
+  join(new Doll(new Node(get_model())));
+
+  update();
 }
 
 
 
 
-void
+Doll*
 Scene::
-need_to_redraw()
+join(Doll*  doll)
 {
-  needed_to_redraw = true;
+  doll->scene = this;
+
+  doll_list.emplace_back(doll);
+
+  return doll;
 }
 
 
@@ -33,27 +41,14 @@ update()
 }
 
 
-bool
+void
 Scene::
-render(Renderer&  dst, bool  force)
+render(Renderer&  dst, int  z_max)
 {
-    if(force || needed_to_redraw)
+    for(auto  doll: doll_list)
     {
-      dst.clear();
-
-        for(auto  doll: doll_list)
-        {
-          doll->render(dst,z_max);
-        }
-
-
-      needed_to_redraw = false;
-
-      return true;
+      doll->render(dst,z_max);
     }
-
-
-  return false;
 }
 
 

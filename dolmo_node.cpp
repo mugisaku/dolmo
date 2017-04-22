@@ -1,6 +1,7 @@
 #include"dolmo_node.hpp"
 #include"dolmo_image.hpp"
 #include"dolmo_screen.hpp"
+#include"dolmo_renderer.hpp"
 #include<algorithm>
 
 
