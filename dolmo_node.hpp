@@ -30,6 +30,7 @@ JoiningKind
 };
 
 
+struct Doll;
 struct Renderer;
 
 
@@ -44,6 +45,8 @@ Node
   int  z_value;
 
   JoiningKind  joining_kind;
+
+  Doll*  doll;
 
   Node*                 parent;
   std::vector<Node*>  children;
@@ -76,6 +79,8 @@ public:
 
   int  get_z_value() const;
 
+  Doll*  get_doll() const;
+
   void  fix_angle();
   void  change_degree(int  v);
 
@@ -83,6 +88,14 @@ public:
 
   Node*  join(Node*  child                                                       );
   Node*  join(Node*  child, int  x, int  y, JoiningKind  jk=JoiningKind::downward);
+
+  void  change_doll(Doll&  doll_);
+
+  void  change_base_offset(const Point&  pt);
+  void  add_to_base_offset(const Point&  pt);
+
+  const Point&  get_base_offset() const;
+  const Point&  get_graph_center() const;
 
   void  change_angle(const Point&  pt);
 

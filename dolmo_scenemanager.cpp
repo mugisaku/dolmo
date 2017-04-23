@@ -1,4 +1,5 @@
 #include"dolmo_scenemanager.hpp"
+#include"dolmo_doll.hpp"
 #include"dolmo_model.hpp"
 #include"dolmo_screen.hpp"
 #include"dolmo_renderer.hpp"
@@ -18,13 +19,14 @@ z_max(z_max_max),
 current_index(0),
 last_time(0),
 copy_node(nullptr),
+mode(Mode::move_position),
 needed_to_redraw(true)
 {
-  scene_list.emplace_back(new Scene);
+  scene_list.emplace_back();
 
   current_scene = scene_list.begin();
 
-  (*current_scene)->update();
+  current_scene->update();
 }
 
 
@@ -38,19 +40,27 @@ get_numbers() const
 }
 
 
-bool
+const Doll*
 SceneManager::
-test_animation_flag() const
+get_current_doll() const
 {
-  return animation_flag;
+  return current_node? current_node->get_doll():nullptr;
+}
+
+
+Mode
+SceneManager::
+get_mode() const
+{
+  return mode;
 }
 
 
 void
 SceneManager::
-unset_animation_flag()
+change_mode(Mode  m)
 {
-  animation_flag = false;
+  mode = m;
 
   needed_to_redraw = true;
 }
@@ -68,9 +78,9 @@ void
 SceneManager::
 press(Renderer&  renderer, int  x, int  y)
 {
-    if(!animation_flag)
+    if(mode != Mode::animation)
     {
-      current_node = renderer.get_cell(screen::width-1-x,y).nodeptr;
+      current_node = renderer.get_cell(x,y).nodeptr;
 
                        current_point.assign(x,y);
       previous_point = current_point            ;
@@ -92,9 +102,9 @@ fprint(FILE*  f) const
 {
   fprintf(f,"%d,\n",scene_list.size());
 
-    for(auto  scene: scene_list)
+    for(auto&  scene: scene_list)
     {
-      scene->fprint(f);
+      scene.fprint(f);
 
       fprintf(f,"\n");
     }
@@ -108,7 +118,7 @@ const char*
 SceneManager::
 sscan(const char*  s)
 {
-    if(animation_flag)
+    if(mode == Mode::animation)
     {
       return nullptr;
     }
@@ -146,7 +156,7 @@ render(Renderer&  dst, bool  force)
     {
       dst.clear();
 
-      (*current_scene)->render(dst,z_max);
+      current_scene->render(dst,z_max);
 
 
       needed_to_redraw = false;
@@ -163,7 +173,7 @@ void
 SceneManager::
 step()
 {
-    if(animation_flag)
+    if(mode == Mode::animation)
     {
       auto  now = SDL_GetTicks();
 
@@ -182,6 +192,30 @@ step()
     }
 
   else
+    if(mode == Mode::move_position)
+    {
+        if(current_node)
+        {
+            if((current_point.x != previous_point.x) ||
+               (current_point.y != previous_point.y))
+            {
+              auto  doll = current_node->get_doll();
+
+              auto  pt = current_point-current_node->get_graph_center();
+
+              doll->add_to_position(pt);
+
+              doll->update();
+
+              previous_point = current_point;
+
+              needed_to_redraw = true;
+            }
+        }
+    }
+
+  else
+    if(mode == Mode::change_angle)
     {
         if(current_node)
         {

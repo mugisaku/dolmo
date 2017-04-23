@@ -18,6 +18,9 @@ Scene
 
 public:
   Scene();
+ ~Scene();
+
+  void  clear();
 
   Doll*  join(Doll*  doll);
 

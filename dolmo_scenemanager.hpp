@@ -6,11 +6,22 @@
 #include"dolmo_node.hpp"
 
 
+enum class
+Mode
+{
+  move_position,
+  change_angle,
+  animation,
+
+};
+
+
 class
 SceneManager
 {
   static constexpr int  z_max_max = 4;
 
+  Mode  mode;
 
   Node*  current_node;
   Node*     copy_node;
@@ -25,14 +36,13 @@ SceneManager
   uint32_t  last_time;
 
 
-  using List = std::list<Scene*>;
+  using List = std::list<Scene>;
 
   List  scene_list;
 
   List::iterator        current_scene;
   List::const_iterator  current_frame;
 
-  bool  animation_flag;
   bool  needed_to_redraw;
 
 public:
@@ -52,9 +62,11 @@ public:
 
   std::pair<int,int>  get_numbers() const;
 
-  bool  test_animation_flag() const;
+  Mode  get_mode() const;
 
-  void  unset_animation_flag();
+  const Doll*  get_current_doll() const;
+
+  void  change_mode(Mode  m);
 
   void  move_pointer(int  x, int  y);
 

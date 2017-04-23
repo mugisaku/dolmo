@@ -65,7 +65,7 @@ insert_new_to_previous()
 {
     if(scene_list.size() < 98)
     {
-      scene_list.emplace(current_scene,new Scene);
+      scene_list.emplace(current_scene,Scene());
 
       ++current_index;
 
@@ -82,7 +82,7 @@ insert_new_to_next()
     {
       auto  it = current_scene;
 
-      scene_list.emplace(++it,new Scene);
+      scene_list.emplace(++it,Scene());
 
       needed_to_redraw = true;
     }
@@ -110,7 +110,7 @@ apply_copy()
     if(copy_node)
     {
 //      (*current_scene)->reform(*copy_node);
-      (*current_scene)->update();
+      current_scene->update();
 
       needed_to_redraw = true;
     }
@@ -123,8 +123,6 @@ erase_this()
 {
     if(scene_list.size() > 1)
     {
-      delete *current_scene;
-
       current_scene = scene_list.erase(current_scene);
 
         if(current_scene == scene_list.end())
@@ -143,11 +141,9 @@ void
 SceneManager::
 start_to_animate()
 {
-  animation_flag = true;
+  change_mode(Mode::animation);
 
   current_frame = scene_list.cbegin();
-
-  needed_to_redraw = true;
 }
 
 

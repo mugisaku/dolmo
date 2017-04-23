@@ -38,7 +38,7 @@ render(bool  ok)
 
       screen::put(renderer);
 
-        if(!hide_menu && !mgr.test_animation_flag())
+        if(!hide_menu && !(mgr.get_mode() == Mode::animation))
         {
           auto  ns = mgr.get_numbers();
 
@@ -70,9 +70,9 @@ process_button(const SDL_MouseButtonEvent&  evt)
   else
     if(evt.button == SDL_BUTTON_RIGHT)
     {
-        if(mgr.test_animation_flag())
+        if(mgr.get_mode() == Mode::animation)
         {
-          mgr.unset_animation_flag();
+          mgr.change_mode(Mode::change_angle);
         }
 
       else

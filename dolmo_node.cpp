@@ -17,6 +17,7 @@ name("root"),
 joining_kind(JoiningKind::none),
 z_value(0),
 parent(nullptr),
+doll(nullptr),
 base_offset(x,y),
 own_degree(0),
 angle_fixed(false)
@@ -29,6 +30,7 @@ name(name_),
 joining_kind(JoiningKind::none),
 z_value(z),
 parent(nullptr),
+doll(nullptr),
 image_rect(img_rect),
 image_center(img_center_),
 own_degree(0),
@@ -88,11 +90,64 @@ get_z_value() const
 }
 
 
+Doll*
+Node::
+get_doll() const
+{
+  return doll;
+}
+
+
 void
 Node::
 fix_angle()
 {
   angle_fixed = true;
+}
+
+
+void
+Node::
+change_doll(Doll&  doll_)
+{
+  doll = &doll_;
+
+    for(auto  child: children)
+    {
+      child->change_doll(doll_);
+    }
+}
+
+
+void
+Node::
+change_base_offset(const Point&  pt)
+{
+  base_offset = pt;
+}
+
+
+void
+Node::
+add_to_base_offset(const Point&  pt)
+{
+  base_offset += pt;
+}
+
+
+const Point&
+Node::
+get_base_offset() const
+{
+  return base_offset;
+}
+
+
+const Point&
+Node::
+get_graph_center() const
+{
+  return graph_center;
 }
 
 
@@ -176,8 +231,8 @@ change_angle(const Point&  pt)
 
   else
     {
-      double  y = -pt.y+(graph_center.y);
-      double  x =  screen::width-pt.x-(graph_center.x);
+      double  y = -pt.y+graph_center.y;
+      double  x =  pt.x-graph_center.x;
 
         if((x != 0.0) &&
            (y != 0.0))

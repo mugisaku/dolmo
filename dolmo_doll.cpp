@@ -10,6 +10,17 @@ reverse_flag(false),
 z_value(0),
 root_node(root)
 {
+    if(root_node)
+    {
+      root_node->change_doll(*this);
+    }
+}
+
+
+Doll::
+~Doll()
+{
+  delete root_node;
 }
 
 
@@ -20,6 +31,30 @@ Doll::
 get_z_value() const
 {
   return z_value;
+}
+
+
+const Node&
+Doll::
+get_root_node() const
+{
+  return *root_node;
+}
+
+
+void
+Doll::
+change_position(const Point&  pt)
+{
+  root_node->change_base_offset(pt);
+}
+
+
+void
+Doll::
+add_to_position(const Point&  pt)
+{
+  root_node->add_to_base_offset(pt);
 }
 
 

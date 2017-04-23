@@ -91,11 +91,11 @@ save_as_png(Renderer&  renderer, const char*  base)
 
   int  x_base = 0;
 
-    for(auto  scene: scene_list)
+    for(auto&  scene: scene_list)
     {
       renderer.clear();
 
-      scene->render(renderer,z_max_max);
+      scene.render(renderer,z_max_max);
 
         for(int  y = 0;  y < ren_h;  ++y)
         {

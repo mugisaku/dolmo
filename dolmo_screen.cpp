@@ -272,7 +272,7 @@ put(const Renderer&  src)
 {
     for(int  y = 0;  y < height;  ++y){
     for(int  x = 0;  x <  width;  ++x){
-      auto   i = src.get_cell(width-1-x,y).color_index;
+      auto   i = src.get_cell(x,y).color_index;
 
         if(i)
         {

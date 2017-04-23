@@ -24,8 +24,14 @@ Doll
 
 public:
   Doll(Node*  root=nullptr);
+ ~Doll(                   );
 
   int  get_z_value() const;
+
+  const Node&  get_root_node() const;
+
+  void  change_position(const Point&  pt);
+  void  add_to_position(const Point&  pt);
 
   void  update();
 

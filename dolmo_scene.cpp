@@ -14,6 +14,27 @@ Scene()
 }
 
 
+Scene::
+~Scene()
+{
+  clear();
+}
+
+
+
+
+void
+Scene::
+clear()
+{
+    for(auto  doll: doll_list)
+    {
+      delete doll;
+    }
+
+
+  doll_list.clear();
+}
 
 
 Doll*
