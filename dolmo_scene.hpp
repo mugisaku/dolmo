@@ -8,17 +8,21 @@
 
 
 struct Doll;
+struct Frame;
 struct Renderer;
 
 
 class
 Scene
 {
-  std::list<Doll*>  doll_list;
+  std::list<Doll>    doll_list;
+  std::list<Frame>  frame_list;
 
 public:
   Scene();
- ~Scene();
+
+        std::list<Frame>*  operator->()      {return &frame_list;}
+  const std::list<Frame>*  operator->() const{return &frame_list;}
 
   void  clear();
 

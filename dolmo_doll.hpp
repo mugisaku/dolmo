@@ -9,6 +9,9 @@
 #include"dolmo_renderer.hpp"
 
 
+struct DollState;
+
+
 class
 Doll
 {
@@ -24,7 +27,15 @@ Doll
 
 public:
   Doll(Node*  root=nullptr);
+  Doll(Scene*  scene_, Node*  root);
+  Doll(Doll&&  rhs) noexcept;
  ~Doll(                   );
+
+
+  Doll&  operator=(Doll&&  rhs) noexcept;
+  const Node&  operator*() const;
+
+  void  clear();
 
   int  get_z_value() const;
 
@@ -40,9 +51,45 @@ public:
   void  fprint(FILE*  f) const;
   const char*   sscan(const char*  s);
 
+  template<typename  T>void  push(const T*&  it){root_node->read(it);}
+
 };
 
 
+struct
+DollState
+{
+  Frame*  frame;
+
+  Doll*  const target;
+
+  int  number_table[400];
+
+  size_t  number_count;
+
+  bool  reverse_flag;
+
+  int  z_value;
+
+  DollState(Doll*  target_): target(target_){}
+
+  Doll*  operator->() const{return target;}
+
+  void  push() const
+  {
+    const int*  p = number_table;
+
+    target->push(p);
+  }
+
+  void  pull()
+  {
+    int*  p = number_table;
+
+    number_count = (**target).write(p,std::end(number_table));
+  }
+
+};
 
 
 #endif

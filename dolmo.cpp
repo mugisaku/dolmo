@@ -1,4 +1,7 @@
 #include"dolmo_node.hpp"
+#include"dolmo_frame.hpp"
+#include"dolmo_scene.hpp"
+#include"dolmo_doll.hpp"
 #include"dolmo_screen.hpp"
 #include"dolmo_renderer.hpp"
 #include"dolmo_image.hpp"

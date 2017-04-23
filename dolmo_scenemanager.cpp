@@ -1,4 +1,5 @@
 #include"dolmo_scenemanager.hpp"
+#include"dolmo_frame.hpp"
 #include"dolmo_doll.hpp"
 #include"dolmo_model.hpp"
 #include"dolmo_screen.hpp"
@@ -27,6 +28,8 @@ needed_to_redraw(true)
   current_scene = scene_list.begin();
 
   current_scene->update();
+
+  edition_frame = (*current_scene)->begin();
 }
 
 
@@ -156,7 +159,11 @@ render(Renderer&  dst, bool  force)
     {
       dst.clear();
 
-      current_scene->render(dst,z_max);
+
+      auto  frame = (mode == Mode::animation)? animation_frame
+                                             :   edition_frame;
+
+      frame->render(dst,z_max);
 
 
       needed_to_redraw = false;
@@ -181,9 +188,9 @@ step()
         {
           last_time = now;
 
-            if(++current_frame == scene_list.cend())
+            if(++animation_frame == (*current_scene)->end())
             {
-              current_frame = scene_list.cbegin();
+              animation_frame = (*current_scene)->begin();
             }
 
 

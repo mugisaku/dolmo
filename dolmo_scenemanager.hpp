@@ -3,6 +3,7 @@
 
 
 #include"dolmo_scene.hpp"
+#include"dolmo_frame.hpp"
 #include"dolmo_node.hpp"
 
 
@@ -36,12 +37,15 @@ SceneManager
   uint32_t  last_time;
 
 
-  using List = std::list<Scene>;
+  using SceneList = std::list<Scene>;
+  using FrameList = std::list<Frame>;
 
-  List  scene_list;
+  SceneList  scene_list;
 
-  List::iterator        current_scene;
-  List::const_iterator  current_frame;
+  SceneList::iterator  current_scene;
+
+  FrameList::iterator    edition_frame;
+  FrameList::iterator  animation_frame;
 
   bool  needed_to_redraw;
 

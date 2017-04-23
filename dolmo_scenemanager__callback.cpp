@@ -1,4 +1,5 @@
 #include"dolmo_scenemanager.hpp"
+#include"dolmo_doll.hpp"
 #include"dolmo_model.hpp"
 #include"dolmo_screen.hpp"
 
@@ -143,7 +144,7 @@ start_to_animate()
 {
   change_mode(Mode::animation);
 
-  current_frame = scene_list.cbegin();
+  animation_frame = (*current_scene)->begin();
 }
 
 

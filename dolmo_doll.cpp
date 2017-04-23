@@ -18,12 +18,64 @@ root_node(root)
 
 
 Doll::
+Doll(Scene*  scene_, Node*  root):
+scene(scene_),
+root_node(root)
+{
+}
+
+
+Doll::
+Doll(Doll&&  rhs) noexcept:
+root_node(nullptr)
+{
+  *this = std::move(rhs);
+}
+
+
+Doll::
 ~Doll()
 {
   delete root_node;
 }
 
 
+
+
+const Node&
+Doll::
+operator*() const
+{
+  return *root_node;
+}
+
+
+Doll&
+Doll::
+operator=(Doll&&  rhs) noexcept
+{
+  clear();
+
+  scene = rhs.scene;
+
+  std::swap(root_node,rhs.root_node);
+
+  z_value      = rhs.z_value;
+  reverse_flag = rhs.reverse_flag;
+}
+
+
+
+
+void
+Doll::
+clear()
+{
+  scene = nullptr;
+
+  delete root_node          ;
+         root_node = nullptr;
+}
 
 
 int

@@ -109,6 +109,57 @@ public:
 
   void  print() const;
 
+
+  template<typename  T>
+  void  read(const T*&  it)
+  {
+    own_degree = *it++;
+
+    T  n = *it++;
+
+      if(n != children.size())
+      {
+        printf("子要素数が一致しません\n");
+
+        throw;
+      }
+
+
+      for(auto  child: children)
+      {
+        child->read(it);
+      }
+  }
+
+
+  template<typename  T>
+  size_t  write(T*&  it, const T*  end) const
+  {
+    size_t  count = 0;
+
+    *it++ = own_degree;
+
+    ++count;
+
+      if(it != end)
+      {
+        *it++ = children.size();
+
+        ++count;
+
+          if(it != end)
+          {
+              for(auto  child: children)
+              {
+                count += child->write(it,end);
+              }
+          }
+      }
+
+
+    return count;
+  }
+
 };
 
 
