@@ -1,5 +1,5 @@
-#ifndef DOLMO_SCENEMANAGER_HPP_INCLUDED
-#define DOLMO_SCENEMANAGER_HPP_INCLUDED
+#ifndef DOLMO_SCENEEDITOR_HPP_INCLUDED
+#define DOLMO_SCENEEDITOR_HPP_INCLUDED
 
 
 #include"dolmo_scene.hpp"
@@ -18,9 +18,11 @@ Mode
 
 
 class
-SceneManager
+SceneEditor
 {
   static constexpr int  z_max_max = 4;
+
+  Scene*  target;
 
   Mode  mode;
 
@@ -37,21 +39,18 @@ SceneManager
   uint32_t  last_time;
 
 
-  using SceneList = std::list<Scene>;
   using FrameList = std::list<Frame>;
 
-  SceneList  scene_list;
-
-  SceneList::iterator  current_scene;
-
-  FrameList::iterator    edition_frame;
+  FrameList::iterator    current_frame;
   FrameList::iterator  animation_frame;
 
   bool  needed_to_redraw;
 
 public:
-  SceneManager();
+  SceneEditor();
 
+
+  void  open(Scene&  new_target);
 
   void  increase_z_max();
   void  decrease_z_max();

@@ -52,9 +52,9 @@ set(SOURCES
   dolmo_doll.cpp
   dolmo_frame.cpp
   dolmo_scene.cpp
-  dolmo_scenemanager.cpp
-  dolmo_scenemanager__callback.cpp
-  dolmo_scenemanager__save.cpp
+  dolmo_sceneEditor.cpp
+  dolmo_sceneEditor__callback.cpp
+  dolmo_sceneEditor__save.cpp
 )
 
 

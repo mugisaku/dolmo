@@ -18,8 +18,12 @@
 namespace{
 
 
-SceneManager
-mgr;
+Scene*
+scn;
+
+
+SceneEditor
+editor;
 
 
 Renderer
@@ -41,9 +45,9 @@ render(bool  ok)
 
       screen::put(renderer);
 
-        if(!hide_menu && !(mgr.get_mode() == Mode::animation))
+        if(!hide_menu && !(editor.get_mode() == Mode::animation))
         {
-          auto  ns = mgr.get_numbers();
+          auto  ns = editor.get_numbers();
 
           screen::put(ns.first+1,ns.second,0,0);
 
@@ -66,16 +70,16 @@ process_button(const SDL_MouseButtonEvent&  evt)
     {
         if(hide_menu || !screen::touch_button(evt.x,evt.y,true))
         {
-          mgr.press(renderer,evt.x,evt.y);
+          editor.press(renderer,evt.x,evt.y);
         }
     }
 
   else
     if(evt.button == SDL_BUTTON_RIGHT)
     {
-        if(mgr.get_mode() == Mode::animation)
+        if(editor.get_mode() == Mode::animation)
         {
-          mgr.change_mode(Mode::change_angle);
+          editor.change_mode(Mode::change_angle);
         }
 
       else
@@ -98,7 +102,7 @@ process_motion(const SDL_MouseMotionEvent&  evt)
     }
 
 
-  mgr.move_pointer(evt.x,evt.y);
+  editor.move_pointer(evt.x,evt.y);
 }
 
 
@@ -128,7 +132,7 @@ load(char*  path)
 
       fclose(f);
 
-      mgr.sscan(s.data());
+      scn->sscan(s.data());
     }
 
 
@@ -153,19 +157,19 @@ main_loop()
       case(SDL_WINDOWEVENT):
             if(evt.window.event == SDL_WINDOWEVENT_EXPOSED)
             {
-              render(mgr.render(renderer,true));
+              render(editor.render(renderer,true));
             }
           break;
       case(SDL_KEYDOWN):
             if(evt.key.keysym.sym == SDLK_SPACE)
             {
-              mgr.save_as_png(renderer,"__DOLMO");
+              editor.save_as_png(renderer,"__DOLMO");
 
               auto  f = fopen("__DOLMO.txt","wb");
 
                 if(f)
                 {
-                  mgr.fprint(f);
+                  scn->fprint(f);
 
                   fclose(f);
                 }
@@ -181,7 +185,7 @@ main_loop()
           process_button(evt.button);
           break;
       case(SDL_MOUSEBUTTONUP):
-          mgr.unpress();
+          editor.unpress();
           break;
       case(SDL_MOUSEMOTION):
           process_motion(evt.motion);
@@ -190,9 +194,9 @@ main_loop()
     }
 
 
-  mgr.step();
+  editor.step();
 
-  render(mgr.render(renderer,false));
+  render(editor.render(renderer,false));
 }
 
 
@@ -208,18 +212,23 @@ main(int  argc, char**  argv)
   image::open("dolmo_parts.png");
 
 
+  scn = new Scene;
+
+  editor.open(*scn);
+
+
   int  y = 20;
 
-  screen::make_button(0,y,"increase z max",mgr,&SceneManager::increase_z_max);  y += 20;
-  screen::make_button(0,y,"decrease z max",mgr,&SceneManager::decrease_z_max);  y += 20;
-  screen::make_button(0,y,"change to previous",mgr,&SceneManager::change_to_previous);  y += 20;
-  screen::make_button(0,y,"change to next",mgr,&SceneManager::change_to_next);  y += 20;
-  screen::make_button(0,y,"insert new to previous",mgr,&SceneManager::insert_new_to_previous);  y += 20;
-  screen::make_button(0,y,"insert new to next",mgr,&SceneManager::insert_new_to_next);  y += 20;
-  screen::make_button(0,y,"copy this",mgr,&SceneManager::copy_this);  y += 20;
-  screen::make_button(0,y,"apply copy",mgr,&SceneManager::apply_copy);  y += 20;
-  screen::make_button(0,y,"erase this",mgr,&SceneManager::erase_this);  y += 20;
-  screen::make_button(0,y,"animate",mgr,&SceneManager::start_to_animate);  y += 20;
+  screen::make_button(0,y,"increase z max",editor,&SceneEditor::increase_z_max);  y += 20;
+  screen::make_button(0,y,"decrease z max",editor,&SceneEditor::decrease_z_max);  y += 20;
+  screen::make_button(0,y,"change to previous",editor,&SceneEditor::change_to_previous);  y += 20;
+  screen::make_button(0,y,"change to next",editor,&SceneEditor::change_to_next);  y += 20;
+  screen::make_button(0,y,"insert new to previous",editor,&SceneEditor::insert_new_to_previous);  y += 20;
+  screen::make_button(0,y,"insert new to next",editor,&SceneEditor::insert_new_to_next);  y += 20;
+  screen::make_button(0,y,"copy this",editor,&SceneEditor::copy_this);  y += 20;
+  screen::make_button(0,y,"apply copy",editor,&SceneEditor::apply_copy);  y += 20;
+  screen::make_button(0,y,"erase this",editor,&SceneEditor::erase_this);  y += 20;
+  screen::make_button(0,y,"animate",editor,&SceneEditor::start_to_animate);  y += 20;
 
   render(true);
 

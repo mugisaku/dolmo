@@ -30,11 +30,11 @@ Button: public  Rect
 {
   const char*  text;
 
-  SceneManager&  manager;
+  SceneEditor&  manager;
 
   Callback  callback;
 
-  Button(int  x_, int  y_, const char*  text_, SceneManager&  mgr, Callback  cb):
+  Button(int  x_, int  y_, const char*  text_, SceneEditor&  mgr, Callback  cb):
   Rect(x_,y_,16*std::strlen(text_),16),
   text(text_),
   manager(mgr),
@@ -144,7 +144,7 @@ clear()
 
 
 void
-make_button(int  x, int  y, const char*  text, SceneManager&  mgr, Callback  cb)
+make_button(int  x, int  y, const char*  text, SceneEditor&  mgr, Callback  cb)
 {
   button_list.emplace_back(x,y,text,mgr,cb);
 }

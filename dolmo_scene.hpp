@@ -24,12 +24,16 @@ public:
         std::list<Frame>*  operator->()      {return &frame_list;}
   const std::list<Frame>*  operator->() const{return &frame_list;}
 
+        std::list<Frame>&  operator*()      {return frame_list;}
+  const std::list<Frame>&  operator*() const{return frame_list;}
+
   void  clear();
 
-  Doll&    allocate_doll();
+  Doll&    allocate_doll(int  x, int  y);
   void   deallocate_doll(Doll&  target);
 
-  std::list<Frame>::iterator  new_frame(std::list<Frame>::iterator  it);
+  std::list<Frame>::iterator     new_frame(std::list<Frame>::iterator  it);
+  std::list<Frame>::iterator  delete_frame(std::list<Frame>::iterator  it);
 
   void  update();
 

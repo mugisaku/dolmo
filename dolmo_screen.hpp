@@ -3,10 +3,10 @@
 
 
 #include<cstdint>
-#include"dolmo_scenemanager.hpp"
+#include"dolmo_sceneEditor.hpp"
 
 
-using Callback = void(SceneManager::*)();
+using Callback = void(SceneEditor::*)();
 
 
 constexpr int  luminance_table_size = 15;
@@ -36,7 +36,7 @@ void  unlock();
 
 void  clear();
 
-void   make_button(int  x, int  y, const char*  text, SceneManager&  mgr, Callback  cb);
+void   make_button(int  x, int  y, const char*  text, SceneEditor&  mgr, Callback  cb);
 bool  touch_button(int  x, int  y, bool  press=false);
 
 void  render_buttons();

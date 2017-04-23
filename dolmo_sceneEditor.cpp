@@ -1,4 +1,4 @@
-#include"dolmo_scenemanager.hpp"
+#include"dolmo_sceneEditor.hpp"
 #include"dolmo_frame.hpp"
 #include"dolmo_doll.hpp"
 #include"dolmo_model.hpp"
@@ -14,8 +14,8 @@
 
 
 
-SceneManager::
-SceneManager():
+SceneEditor::
+SceneEditor():
 z_max(z_max_max),
 current_index(0),
 last_time(0),
@@ -23,28 +23,32 @@ copy_node(nullptr),
 mode(Mode::move_position),
 needed_to_redraw(true)
 {
-  scene_list.emplace_back();
-
-  current_scene = scene_list.begin();
-
-  current_scene->update();
-
-  edition_frame = (*current_scene)->begin();
 }
 
 
 
 
+void
+SceneEditor::
+open(Scene&  new_target)
+{
+  target = &new_target;
+
+  current_frame = (*target)->begin();
+  current_index = 0;
+}
+
+
 std::pair<int,int>
-SceneManager::
+SceneEditor::
 get_numbers() const
 {
-  return std::make_pair(current_index,scene_list.size());
+  return std::make_pair(current_index,(*target)->size());
 }
 
 
 const Doll*
-SceneManager::
+SceneEditor::
 get_current_doll() const
 {
   return current_node? current_node->get_doll():nullptr;
@@ -52,7 +56,7 @@ get_current_doll() const
 
 
 Mode
-SceneManager::
+SceneEditor::
 get_mode() const
 {
   return mode;
@@ -60,7 +64,7 @@ get_mode() const
 
 
 void
-SceneManager::
+SceneEditor::
 change_mode(Mode  m)
 {
   mode = m;
@@ -70,7 +74,7 @@ change_mode(Mode  m)
 
 
 void
-SceneManager::
+SceneEditor::
 move_pointer(int  x, int  y)
 {
   current_point.assign(x,y);
@@ -78,7 +82,7 @@ move_pointer(int  x, int  y)
 
 
 void
-SceneManager::
+SceneEditor::
 press(Renderer&  renderer, int  x, int  y)
 {
     if(mode != Mode::animation)
@@ -92,67 +96,15 @@ press(Renderer&  renderer, int  x, int  y)
 
 
 void
-SceneManager::
+SceneEditor::
 unpress()
 {
   current_node = nullptr;
 }
 
 
-void
-SceneManager::
-fprint(FILE*  f) const
-{
-  fprintf(f,"%d,\n",scene_list.size());
-
-    for(auto&  scene: scene_list)
-    {
-      scene.fprint(f);
-
-      fprintf(f,"\n");
-    }
-
-
-  fprintf(f,"\n");
-}
-
-
-const char*
-SceneManager::
-sscan(const char*  s)
-{
-    if(mode == Mode::animation)
-    {
-      return nullptr;
-    }
-
-
-  int  d;
-  int  n;
-
-    if(sscanf(s," %d , %n",&d,&n) >= 1)
-    {
-        if(d >= 1)
-        {
-          s += n;
-
-
-          current_node = nullptr;
-          current_scene = scene_list.begin();
-
-          current_index = 0;
-
-          needed_to_redraw = true;
-        }
-    }
-
-
-  return nullptr;
-}
-
-
 bool
-SceneManager::
+SceneEditor::
 render(Renderer&  dst, bool  force)
 {
     if(needed_to_redraw || force)
@@ -161,7 +113,7 @@ render(Renderer&  dst, bool  force)
 
 
       auto  frame = (mode == Mode::animation)? animation_frame
-                                             :   edition_frame;
+                                             :   current_frame;
 
       frame->render(dst,z_max);
 
@@ -177,7 +129,7 @@ render(Renderer&  dst, bool  force)
 
 
 void
-SceneManager::
+SceneEditor::
 step()
 {
     if(mode == Mode::animation)
@@ -188,9 +140,9 @@ step()
         {
           last_time = now;
 
-            if(++animation_frame == (*current_scene)->end())
+            if(++animation_frame == (*target)->end())
             {
-              animation_frame = (*current_scene)->begin();
+              animation_frame = (*target)->begin();
             }
 
 
