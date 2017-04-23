@@ -23,7 +23,8 @@ Frame
 public:
   Frame(Scene&  scene_);
 
-  void  join(Doll*  doll);
+  void     add(Doll&  doll);
+  void  remove(Doll&  doll);
 
   void  update();
 

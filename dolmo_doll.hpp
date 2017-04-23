@@ -2,8 +2,7 @@
 #define DOLMO_DOLL_HPP_INCLUDED
 
 
-#include<list>
-#include<vector>
+#include<memory>
 #include"dolmo_node.hpp"
 #include"dolmo_scene.hpp"
 #include"dolmo_renderer.hpp"
@@ -15,24 +14,23 @@ struct DollState;
 class
 Doll
 {
-  Scene*  scene;
+  Scene&  scene;
 
-  Node*  root_node;
+  std::unique_ptr<Node>  root_node;
 
   bool  reverse_flag;
 
   int  z_value;
 
-  friend Doll*  Scene::join(Doll*  doll);
-
 public:
-  Doll(Node*  root=nullptr);
-  Doll(Scene*  scene_, Node*  root);
-  Doll(Doll&&  rhs) noexcept;
- ~Doll(                   );
+  Doll(Scene&  scene_, Node*  root, int  z, bool  rev=false);
+  Doll(const Doll&   rhs) = delete;
+  Doll(      Doll&&  rhs) = delete;
 
 
-  Doll&  operator=(Doll&&  rhs) noexcept;
+  Doll&  operator=(const Doll&   rhs) = delete;
+  Doll&  operator=(      Doll&&  rhs) = delete;
+
   const Node&  operator*() const;
 
   void  clear();

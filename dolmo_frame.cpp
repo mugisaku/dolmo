@@ -16,9 +16,31 @@ scene(scene_)
 
 void
 Frame::
-join(Doll*  doll)
+add(Doll&  doll)
 {
-  dollstate_list.emplace_back(doll);
+  dollstate_list.emplace_back(&doll);
+}
+
+
+void
+Frame::
+remove(Doll&  doll)
+{
+  auto   it = dollstate_list.begin();
+  auto  end = dollstate_list.end();
+
+    while(it != end)
+    {
+        if(it->target == &doll)
+        {
+          dollstate_list.erase(it);
+
+          break;
+        }
+
+
+      ++it;
+    }
 }
 
 

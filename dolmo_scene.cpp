@@ -10,6 +10,8 @@ Scene::
 Scene()
 {
   frame_list.emplace_back(*this);
+
+  allocate_doll();
 }
 
 
@@ -24,13 +26,50 @@ clear()
 }
 
 
-Doll*
+Doll&
 Scene::
-join(Doll*  doll)
+allocate_doll()
 {
-//  doll_list.emplace_back();
+  doll_list.emplace_back(*this,new Node(get_model()),0);
 
-  return doll;
+  auto&  bk = doll_list.back();
+
+    for(auto&  frame: frame_list)
+    {
+      frame.add(bk);
+    }
+
+
+  return bk;
+}
+
+
+void
+
+Scene::
+deallocate_doll(Doll&  target)
+{
+    for(auto&  doll: doll_list)
+    {
+        if(&doll == &target)
+        {
+            for(auto&  frame: frame_list)
+            {
+              frame.remove(doll);
+            }
+
+
+          return;
+        }
+    }
+}
+
+
+std::list<Frame>::iterator
+Scene::
+new_frame(std::list<Frame>::iterator  it)
+{
+  return frame_list.emplace(it,*this);
 }
 
 

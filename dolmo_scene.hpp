@@ -26,7 +26,10 @@ public:
 
   void  clear();
 
-  Doll*  join(Doll*  doll);
+  Doll&    allocate_doll();
+  void   deallocate_doll(Doll&  target);
+
+  std::list<Frame>::iterator  new_frame(std::list<Frame>::iterator  it);
 
   void  update();
 
