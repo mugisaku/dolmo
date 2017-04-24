@@ -43,11 +43,6 @@ void  unlock();
 
 void  clear();
 
-void   make_button(int  x, int  y, const char*  text, SceneEditor&  mgr, Callback  cb);
-bool  touch_button(int  x, int  y, bool  press=false);
-
-void  render_buttons();
-
 void   put_color(uint32_t  color, int  x, int  y);
 void   put_string(const char*      s, uint32_t  color, int  x, int  y);
 void   put_string(const char16_t*  s, uint32_t  color, int  x, int  y);

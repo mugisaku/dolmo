@@ -20,7 +20,7 @@ z_max(z_max_max),
 current_index(0),
 last_time(0),
 copy_node(nullptr),
-mode(Mode::main),
+mode(Mode::allocate_doll),
 needed_to_redraw(true)
 {
 }
@@ -69,6 +69,8 @@ change_mode(Mode  m)
 {
   mode = m;
 
+  current_node = nullptr;
+
   needed_to_redraw = true;
 }
 
@@ -85,6 +87,27 @@ void
 SceneEditor::
 press(Renderer&  renderer, int  x, int  y)
 {
+    if(mode == Mode::allocate_doll)
+    {
+      target->allocate_doll(x,y);
+
+      needed_to_redraw = true;
+    }
+
+  else
+    if(mode == Mode::remove_doll)
+    {
+      current_node = renderer.get_cell(x,y).nodeptr;
+
+        if(current_node)
+        {
+          target->deallocate_doll(*current_node->get_doll());
+
+          needed_to_redraw = true;
+        }
+    }
+
+  else
     if(mode != Mode::animation)
     {
       current_node = renderer.get_cell(x,y).nodeptr;
@@ -151,18 +174,43 @@ step()
     }
 
   else
-    if(mode == Mode::allocate_doll)
+    if(mode == Mode::move_angle)
     {
+        if(current_node)
+        {
+            if((current_point.x != previous_point.x) ||
+               (current_point.y != previous_point.y))
+            {
+              current_node->change_angle(current_point);
+
+              previous_point = current_point;
+
+              needed_to_redraw = true;
+            }
+        }
     }
 
   else
-    if(mode == Mode::main)
+    if(mode == Mode::move_position)
     {
-    }
+        if(current_node)
+        {
+            if((current_point.x != previous_point.x) ||
+               (current_point.y != previous_point.y))
+            {
+              auto  doll = current_node->get_doll();
 
-  else
-    if(mode == Mode::edit_frame)
-    {
+              auto  pt = current_point-current_node->get_graph_center();
+
+              doll->add_to_position(pt);
+
+              doll->update();
+
+              previous_point = current_point;
+
+              needed_to_redraw = true;
+            }
+        }
     }
 }
 

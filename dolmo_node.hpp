@@ -77,6 +77,8 @@ public:
 
   Node&  operator=(const Node&  rhs) noexcept;
 
+  void  clear();
+
   int  get_z_value() const;
 
   Doll*  get_doll() const;

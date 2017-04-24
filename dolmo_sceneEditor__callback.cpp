@@ -138,9 +138,46 @@ erase_this()
 }
 
 
+
+
 void
 SceneEditor::
-start_to_animate()
+change_to_move_angle()
+{
+  change_mode(Mode::move_angle);
+
+}
+
+
+void
+SceneEditor::
+change_to_move_position()
+{
+  change_mode(Mode::move_position);
+
+}
+
+void
+SceneEditor::
+change_to_remove_doll()
+{
+  change_mode(Mode::remove_doll);
+
+}
+
+
+void
+SceneEditor::
+change_to_allocate_doll()
+{
+  change_mode(Mode::allocate_doll);
+
+}
+
+
+void
+SceneEditor::
+change_to_animate()
 {
   change_mode(Mode::animation);
 

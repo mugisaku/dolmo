@@ -11,18 +11,28 @@ Glyph*
 table[0x10000];
 
 
+uint16_t
+fgetc16be(FILE*  f)
+{
+  uint16_t  v = fgetc(f)<<8;
+
+  v |= fgetc(f);
+
+  return v;
+}
+
+
+void
+fputc16be(int  c, FILE*  f)
+{
+  fputc((c>>8)&0xFF,f);
+  fputc((c   )&0xFF,f);
+}
+
+
 struct
 Initializer
 {
-  static uint16_t  getc(FILE*  f)
-  {
-    uint16_t  v = fgetc(f)<<8;
-
-    v |= fgetc(f);
-
-    return v;
-  }
-
   Initializer()
   {
     auto  f = fopen("/usr/local/share/oat/font.bin","rb");
@@ -35,11 +45,11 @@ Initializer
 
       if(f)
       {
-        auto  n = getc(f);
+        auto  n = fgetc16be(f);
 
           while(n--)
           {
-            auto  u = getc(f);
+            auto  u = fgetc16be(f);
 
             auto&  dst = table[u];
 
@@ -47,15 +57,22 @@ Initializer
               {
                 dst = new Glyph;
 
+                dst->unicode = u;
+                dst->count   = 0;
+
                   for(int  y = 0;  y < Glyph::size;  ++y)
                   {
-                    dst->data[y] = getc(f);
+                    dst->data[y] = fgetc16be(f);
                   }
 
 
                   if(u >= 0xFF00)
                   {
-                    table[u-0xFF00+' '] = dst;
+                    u = u-0xFF00+' ';
+
+                    dst->unicode = u;
+
+                    table[u] = dst;
                   }
               }
           }
@@ -74,7 +91,48 @@ Initializer
 const Glyph*
 get_glyph(char16_t  c)
 {
-  return table[c];
+  auto  g = table[c];
+
+    if(g)
+    {
+      g->count = 1;
+    }
+
+
+  return g;
+}
+
+
+void
+print_required_glyphes()
+{
+  auto  f = fopen("font_glyphes.cpp","wb");
+
+    if(f)
+    {
+      fprintf(f,"const uint16_t\ntable[] =\n{\n");
+
+        for(auto  gl: table)
+        {
+            if(gl && gl->count)
+            {
+              fprintf(f,"0x%04X,",gl->unicode);
+
+                for(auto  ln: gl->data)
+                {
+                  fprintf(f,"0x%04X,",gl->unicode);
+                }
+
+
+              fprintf(f,"\n");
+            }
+        }
+
+
+      fprintf(f,"};\n\n\n");
+
+      fclose(f);
+    }
 }
 
 

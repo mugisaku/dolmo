@@ -25,30 +25,6 @@ int  bpp;
 uint8_t*  row_table[screen::height];
 
 
-struct
-Button: public  Rect
-{
-  const char*  text;
-
-  SceneEditor&  manager;
-
-  Callback  callback;
-
-  Button(int  x_, int  y_, const char*  text_, SceneEditor&  mgr, Callback  cb):
-  Rect(x_,y_,16*std::strlen(text_),16),
-  text(text_),
-  manager(mgr),
-  callback(cb)
-  {
-  }
-
-};
-
-
-const Button*
-current_button;
-
-
 uint32_t
 palette[luminance_table_size];
 
@@ -59,10 +35,6 @@ red;
 
 uint32_t
 yellow;
-
-
-std::vector<Button>
-button_list;
 
 
 bool
@@ -96,9 +68,6 @@ open()
   surface = SDL_GetWindowSurface(window);
 
   bpp = surface->format->BytesPerPixel;
-
-  red    = SDL_MapRGB(surface->format,0xFF,0x00,0x00);
-  yellow = SDL_MapRGB(surface->format,0xFF,0xFF,0x00);
 
     for(int  i = 0;  i < luminance_table_size;   ++i)
     {
@@ -153,48 +122,6 @@ clear()
 }
 
 
-
-
-void
-make_button(int  x, int  y, const char*  text, SceneEditor&  mgr, Callback  cb)
-{
-  button_list.emplace_back(x,y,text,mgr,cb);
-}
-
-
-bool
-touch_button(int  x, int  y, bool  press)
-{
-  Point  pt(x,y);
-
-    for(auto&  btn: button_list)
-    {
-        if(btn.test(pt))
-        {
-          auto  old = current_button       ;
-                      current_button = &btn;
-
-            if(press)
-            {
-              (btn.manager.*btn.callback)();
-            }
-
-
-          return(old != current_button);
-        }
-    }
-
-
-    if(current_button)
-    {
-      current_button = nullptr;
-
-      return true;
-    }
-
-
-  return false;
-}
 
 
 void
@@ -336,23 +263,6 @@ fill_rectangle(uint32_t  color, int  x, int  y, int  w, int  h)
   SDL_Rect  rect = {x,y,w,h};
 
   SDL_FillRect(surface,&rect,color);
-}
-
-
-void
-render_buttons()
-{
-    for(auto&  btn: button_list)
-    {
-      auto  flag = (current_button == &btn);
-
-      put_string(btn.text,flag? yellow:white,btn.x,btn.y);
-
-        if(flag)
-        {
-          draw_rectangle(white,btn.x,btn.y,btn.w,btn.h);
-        }
-    }
 }
 
 

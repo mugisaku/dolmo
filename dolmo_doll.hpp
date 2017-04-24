@@ -35,6 +35,8 @@ public:
 
   void  clear();
 
+  bool  test_reverse_flag() const;
+
   int  get_z_value() const;
 
   const Node&  get_root_node() const;
@@ -57,8 +59,6 @@ public:
 struct
 DollState
 {
-  Frame*  frame;
-
   Doll*  const target;
 
   int  number_table[400];
@@ -69,7 +69,7 @@ DollState
 
   int  z_value;
 
-  DollState(Doll*  target_): target(target_){}
+  DollState(Doll*  target_): target(target_){if(target){pull();}}
 
   Doll*  operator->() const{return target;}
 
@@ -78,6 +78,9 @@ DollState
     const int*  p = number_table;
 
     target->push(p);
+
+//    target->reverse_flag = reverse_flag;
+//    target->change_z_value(z_value);
   }
 
   void  pull()
@@ -85,6 +88,9 @@ DollState
     int*  p = number_table;
 
     number_count = (**target).write(p,std::end(number_table));
+
+    reverse_flag = target->test_reverse_flag();
+    z_value      = target->get_z_value();
   }
 
 };

@@ -6,6 +6,8 @@
 #include"dolmo_renderer.hpp"
 #include"dolmo_image.hpp"
 #include"dolmo_model.hpp"
+#include"dolmo_font.hpp"
+#include"dolmo_gui.hpp"
 #include<cstdlib>
 #include<string>
 
@@ -48,7 +50,7 @@ render(bool  ok)
 
       screen::put_renderer(renderer,0,24);
 
-        if(!hide_menu && !(editor.get_mode() == SceneEditor::Mode::animation))
+        if(!hide_menu)
         {
           auto  ns = editor.get_numbers();
 
@@ -60,7 +62,7 @@ render(bool  ok)
 
           screen::put_string(buf,screen::white,0,0);
 
-          screen::render_buttons();
+          gui::render_buttons();
         }
 
 
@@ -77,25 +79,19 @@ process_button(const SDL_MouseButtonEvent&  evt)
 {
     if(evt.button == SDL_BUTTON_LEFT)
     {
-        if(hide_menu || !screen::touch_button(evt.x,evt.y,true))
+        if(hide_menu || !gui::touch_button(evt.x,evt.y,true))
         {
-          editor.press(renderer,evt.x,evt.y);
+            if(evt.y >= 24)
+            {
+              editor.press(renderer,evt.x,evt.y-24);
+            }
         }
     }
 
   else
     if(evt.button == SDL_BUTTON_RIGHT)
     {
-        if(editor.get_mode() == SceneEditor::Mode::animation)
-        {
-          editor.change_mode(SceneEditor::Mode::main);
-        }
-
-      else
-        {
-          hide_menu = !hide_menu;
-        }
-
+      hide_menu = !hide_menu;
 
       render(true);
     }
@@ -107,11 +103,14 @@ process_motion(const SDL_MouseMotionEvent&  evt)
 {
     if(!hide_menu)
     {
-      render(screen::touch_button(evt.x,evt.y,false));
+      render(gui::touch_button(evt.x,evt.y,false));
     }
 
 
-  editor.move_pointer(evt.x,evt.y);
+    if(evt.y >= 24)
+    {
+      editor.move_pointer(evt.x,evt.y-24);
+    }
 }
 
 
@@ -185,6 +184,7 @@ main_loop()
             }
           break;
       case(SDL_QUIT):
+          print_required_glyphes();
           fflush(stdout);
           screen::close();
           quick_exit(EXIT_SUCCESS);
@@ -218,6 +218,9 @@ int
 main(int  argc, char**  argv)
 {
   screen::open();
+
+  gui::initialize();
+
   image::open("dolmo_parts.png");
 
   gray = screen::get_color(0x3F,0x3F,0x3F);
@@ -229,20 +232,28 @@ main(int  argc, char**  argv)
 
   int  y = 20;
 
-  screen::make_button(0,y,"increase z max",editor,&SceneEditor::increase_z_max);  y += 20;
-  screen::make_button(0,y,"decrease z max",editor,&SceneEditor::decrease_z_max);  y += 20;
-  screen::make_button(0,y,"copy this",editor,&SceneEditor::copy_this);  y += 20;
-  screen::make_button(0,y,"apply copy",editor,&SceneEditor::apply_copy);  y += 20;
-  screen::make_button(0,y,"erase this",editor,&SceneEditor::erase_this);  y += 20;
-  screen::make_button(0,y,"animate",editor,&SceneEditor::start_to_animate);  y += 20;
+  gui::make_button(0,y,u"increase z max",editor,&SceneEditor::increase_z_max);  y += 20;
+  gui::make_button(0,y,u"decrease z max",editor,&SceneEditor::decrease_z_max);  y += 20;
+  gui::make_button(0,y,u"copy this",editor,&SceneEditor::copy_this);  y += 20;
+  gui::make_button(0,y,u"apply copy",editor,&SceneEditor::apply_copy);  y += 20;
+
 
   y = screen::height/2-32;
 
-  screen::make_button(               0,y   ,"<",editor,&SceneEditor::change_to_previous);
-  screen::make_button(screen::width-16,y   ,">",editor,&SceneEditor::change_to_next);
-  screen::make_button(               0,y+64,"+",editor,&SceneEditor::insert_new_to_previous);
-  screen::make_button(screen::width-16,y+64,"+",editor,&SceneEditor::insert_new_to_next);
+  gui::make_button(               0,y   ,u"<",editor,&SceneEditor::change_to_previous);
+  gui::make_button(screen::width-16,y   ,u">",editor,&SceneEditor::change_to_next);
+  gui::make_button(               0,y+64,u"+",editor,&SceneEditor::insert_new_to_previous);
+  gui::make_button(screen::width-16,y+64,u"+",editor,&SceneEditor::insert_new_to_next);
 
+  gui::make_button(screen::width-(16*3),screen::height-16,u"DEL",editor,&SceneEditor::erase_this);
+
+  gui::add_radio_button(u"人形配置",editor,&SceneEditor::change_to_allocate_doll);
+  gui::add_radio_button(u"人形削除",editor,&SceneEditor::change_to_remove_doll);
+  gui::add_radio_button(u"角度変更",editor,&SceneEditor::change_to_move_angle);
+  gui::add_radio_button(u"位置変更",editor,&SceneEditor::change_to_move_position);
+  gui::add_radio_button(    u"動画",editor,&SceneEditor::change_to_animate);
+
+  gui::fix_radio_buttons(0,screen::height);
 
   render(true);
 

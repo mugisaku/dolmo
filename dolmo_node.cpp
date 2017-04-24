@@ -39,7 +39,8 @@ angle_fixed(false)
 
 
 Node::
-Node(const Node&  rhs) noexcept
+Node(const Node&  rhs) noexcept:
+parent(nullptr)
 {
   *this = rhs;
 }
@@ -48,10 +49,7 @@ Node(const Node&  rhs) noexcept
 Node::
 ~Node()
 {
-    for(auto  child: children)
-    {
-      delete child;
-    }
+  clear();
 }
 
 
@@ -61,6 +59,8 @@ Node&
 Node::
 operator=(const Node&  rhs) noexcept
 {
+  clear();
+
   name         = rhs.name;
   joining_kind = rhs.joining_kind;
   z_value      = rhs.z_value;
@@ -77,6 +77,22 @@ operator=(const Node&  rhs) noexcept
 
 
   return *this;
+}
+
+
+
+
+void
+Node::
+clear()
+{
+    for(auto  child: children)
+    {
+      delete child;
+    }
+
+
+  children.clear();
 }
 
 

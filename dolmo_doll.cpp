@@ -29,6 +29,14 @@ operator*() const
 
 
 
+bool
+Doll::
+test_reverse_flag() const
+{
+  return reverse_flag;
+}
+
+
 int
 Doll::
 get_z_value() const

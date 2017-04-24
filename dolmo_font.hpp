@@ -11,8 +11,11 @@ Glyph
 {
   static constexpr int  size = 14;
 
+  uint16_t  unicode;
+
   uint16_t  data[size];
 
+  int  count;
 };
 
 
@@ -20,7 +23,7 @@ Glyph
 
 const Glyph*  get_glyph(char16_t  c);
 
-
+void  print_required_glyphes();
 
 
 #endif

@@ -73,7 +73,17 @@ std::list<Frame>::iterator
 Scene::
 new_frame(std::list<Frame>::iterator  it)
 {
-  return frame_list.emplace(it,*this);
+  auto  base = it;
+
+    if(base == frame_list.end())
+    {
+      --base;
+    }
+
+
+  auto  res = frame_list.emplace(it,*base);
+
+  return res;
 }
 
 

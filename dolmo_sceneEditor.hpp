@@ -14,10 +14,11 @@ public:
   static constexpr int  z_max_max = 4;
 
   enum class Mode{
-    main,
     allocate_doll,
+    remove_doll,
+    move_position,
+    move_angle,
     animation,
-    edit_frame,
   };
 
 
@@ -61,7 +62,11 @@ public:
   void  copy_this();
   void  apply_copy();
   void  erase_this();
-  void  start_to_animate();
+  void  change_to_animate();
+  void  change_to_move_angle();
+  void  change_to_move_position();
+  void  change_to_remove_doll();
+  void  change_to_allocate_doll();
 
   std::pair<int,int>  get_numbers() const;
 
