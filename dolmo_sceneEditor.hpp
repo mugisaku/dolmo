@@ -7,21 +7,21 @@
 #include"dolmo_node.hpp"
 
 
-enum class
-Mode
-{
-  move_position,
-  change_angle,
-  animation,
-
-};
-
-
 class
 SceneEditor
 {
+public:
   static constexpr int  z_max_max = 4;
 
+  enum class Mode{
+    main,
+    allocate_doll,
+    animation,
+    edit_frame,
+  };
+
+
+private:
   Scene*  target;
 
   Mode  mode;

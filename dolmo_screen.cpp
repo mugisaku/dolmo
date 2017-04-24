@@ -54,6 +54,10 @@ palette[luminance_table_size];
 
 
 uint32_t
+red;
+
+
+uint32_t
 yellow;
 
 
@@ -93,6 +97,7 @@ open()
 
   bpp = surface->format->BytesPerPixel;
 
+  red    = SDL_MapRGB(surface->format,0xFF,0x00,0x00);
   yellow = SDL_MapRGB(surface->format,0xFF,0xFF,0x00);
 
     for(int  i = 0;  i < luminance_table_size;   ++i)
@@ -117,6 +122,13 @@ close()
   SDL_DestroyWindow(window);
 
   SDL_Quit();
+}
+
+
+uint32_t
+get_color(uint8_t  r, uint8_t  g, uint8_t  b)
+{
+  return SDL_MapRGB(surface->format,r,g,b);
 }
 
 
@@ -200,9 +212,18 @@ put_color(uint32_t  color, int  x, int  y)
 
 
 void
-render(const Glyph&  gl, uint32_t  color, int  x, int  y)
+render(const Glyph*  gl, uint32_t  color, int  x, int  y)
 {
-  const uint8_t*  p = gl.data;
+    if(!gl)
+    {
+      return;
+    }
+
+
+  const uint16_t*  p = gl->data;
+
+  x += 2;
+  y += 2;
 
     for(int  yy = 0;  yy < Glyph::size;  ++yy)
     {
@@ -210,15 +231,9 @@ render(const Glyph&  gl, uint32_t  color, int  x, int  y)
 
         for(int  xx = 0;  xx < Glyph::size;  ++xx)
         {
-            if(v&0x80)
+            if(v&0x8000)
             {
-              int  xxx = x+(xx*2);
-              int  yyy = y+(yy*2);
-
-              put_color(color,xxx  ,yyy  );
-              put_color(color,xxx+1,yyy  );
-              put_color(color,xxx  ,yyy+1);
-              put_color(color,xxx+1,yyy+1);
+              put_color(color,x+xx,y+yy);
             }
 
 
@@ -229,56 +244,98 @@ render(const Glyph&  gl, uint32_t  color, int  x, int  y)
 
 
 void
-render(int  d, int  x, int  y)
+put_string(const char*  s, uint32_t  color, int  x, int  y)
 {
-  auto  i10 = d/10;
-  auto  i1  = d%10;
+  bool  strong_flag = false;
 
-    if(i10)
-    {
-      render(get_glyph(i10+'0'),0xFFFFFFFF,x,y);
-    }
-
-
-  render(get_glyph(i1+'0'),0xFFFFFFFF,x+16,y);
-}
-
-
-void
-put(const char*  s, uint32_t  color, int  x, int  y)
-{
     while(*s)
     {
       auto  c = *s++;
 
-      render(get_glyph(c),color,x,y);
+        if(c == '*')
+        {
+          strong_flag = !strong_flag;
+        }
 
-      x += 16;
+      else
+        {
+          render(get_glyph(c),strong_flag? red:color,x,y);
+
+          x += 16;
+        }
     }
 }
 
 
 void
-put(int  cur, int  max, int  x, int  y)
+put_string(const char16_t*  s, uint32_t  color, int  x, int  y)
 {
-  render(           cur,           x   ,y);
-  render(get_glyph('/'),0xFFFFFFFF,x+32,y);
-  render(           max,           x+48,y);
+  bool  strong_flag = false;
+
+    while(*s)
+    {
+      auto  c = *s++;
+
+        if(c == '*')
+        {
+          strong_flag = !strong_flag;
+        }
+
+      else
+        {
+          render(get_glyph(c),strong_flag? red:color,x,y);
+
+          x += 16;
+        }
+    }
 }
 
 
 void
-put(const Renderer&  src)
+put_renderer(const Renderer&  src, int  x, int  y)
 {
-    for(int  y = 0;  y < height;  ++y){
-    for(int  x = 0;  x <  width;  ++x){
-      auto   i = src.get_cell(x,y).color_index;
+  auto  w = src.get_width();
+  auto  h = src.get_height();
+
+    for(int  yy = 0;  yy < h;  ++yy){
+    for(int  xx = 0;  xx < w;  ++xx){
+      auto   i = src.get_cell(xx,yy).color_index;
 
         if(i)
         {
-          put_color(palette[i],x,y);
+          put_color(palette[i],x+xx,y+yy);
         }
     }}
+}
+
+
+void
+draw_rectangle(uint32_t  color, int  x, int  y, int  w, int  h)
+{
+    for(int  n = 0;  n < w;  ++n)
+    {
+      put_color(color,x+n,y    );
+      put_color(color,x+n,y+h-1);
+    }
+
+
+  y += 1;
+  h -= 2;
+
+    while(h--)
+    {
+      put_color(color,x    ,y  );
+      put_color(color,x+w-1,y++);
+    }
+}
+
+
+void
+fill_rectangle(uint32_t  color, int  x, int  y, int  w, int  h)
+{
+  SDL_Rect  rect = {x,y,w,h};
+
+  SDL_FillRect(surface,&rect,color);
 }
 
 
@@ -289,7 +346,12 @@ render_buttons()
     {
       auto  flag = (current_button == &btn);
 
-      put(btn.text,flag? yellow:0xFFFFFFFF,btn.x,btn.y);
+      put_string(btn.text,flag? yellow:white,btn.x,btn.y);
+
+        if(flag)
+        {
+          draw_rectangle(white,btn.x,btn.y,btn.w,btn.h);
+        }
     }
 }
 

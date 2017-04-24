@@ -28,8 +28,15 @@ constexpr int  width  = 540;
 constexpr int  height = 540;
 
 
+constexpr uint32_t  white = 0xFFFFFFFF;
+constexpr uint32_t  black = 0;
+
+
 void   open();
 void  close();
+
+uint32_t  get_color(uint8_t  r, uint8_t  g, uint8_t  b);
+
 
 void    lock();
 void  unlock();
@@ -41,9 +48,13 @@ bool  touch_button(int  x, int  y, bool  press=false);
 
 void  render_buttons();
 
-void   put(const char*  s, int  x, int  y);
-void   put(int  cur, int  max, int  x, int  y);
-void   put(const Renderer&  src);
+void   put_color(uint32_t  color, int  x, int  y);
+void   put_string(const char*      s, uint32_t  color, int  x, int  y);
+void   put_string(const char16_t*  s, uint32_t  color, int  x, int  y);
+void   put_renderer(const Renderer&  src, int  x, int  y);
+
+void   draw_rectangle(uint32_t  color, int  x, int  y, int  w, int  h);
+void   fill_rectangle(uint32_t  color, int  x, int  y, int  w, int  h);
 
 void  update();
 

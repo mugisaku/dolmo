@@ -27,11 +27,14 @@ editor;
 
 
 Renderer
-renderer(screen::width,screen::height);
+renderer(screen::width,screen::height-24);
 
 
 bool
 hide_menu;
+
+
+uint32_t  gray;
 
 
 void
@@ -43,13 +46,19 @@ render(bool  ok)
 
       screen::clear();
 
-      screen::put(renderer);
+      screen::put_renderer(renderer,0,24);
 
-        if(!hide_menu && !(editor.get_mode() == Mode::animation))
+        if(!hide_menu && !(editor.get_mode() == SceneEditor::Mode::animation))
         {
           auto  ns = editor.get_numbers();
 
-          screen::put(ns.first+1,ns.second,0,0);
+          char  buf[80];
+
+          snprintf(buf,sizeof(buf),"FRAME[%2d/%2d]",ns.first+1,ns.second);
+
+          screen::fill_rectangle(gray,0,0,screen::width,24);
+
+          screen::put_string(buf,screen::white,0,0);
 
           screen::render_buttons();
         }
@@ -77,9 +86,9 @@ process_button(const SDL_MouseButtonEvent&  evt)
   else
     if(evt.button == SDL_BUTTON_RIGHT)
     {
-        if(editor.get_mode() == Mode::animation)
+        if(editor.get_mode() == SceneEditor::Mode::animation)
         {
-          editor.change_mode(Mode::change_angle);
+          editor.change_mode(SceneEditor::Mode::main);
         }
 
       else
@@ -211,6 +220,7 @@ main(int  argc, char**  argv)
   screen::open();
   image::open("dolmo_parts.png");
 
+  gray = screen::get_color(0x3F,0x3F,0x3F);
 
   scn = new Scene;
 
@@ -221,14 +231,18 @@ main(int  argc, char**  argv)
 
   screen::make_button(0,y,"increase z max",editor,&SceneEditor::increase_z_max);  y += 20;
   screen::make_button(0,y,"decrease z max",editor,&SceneEditor::decrease_z_max);  y += 20;
-  screen::make_button(0,y,"change to previous",editor,&SceneEditor::change_to_previous);  y += 20;
-  screen::make_button(0,y,"change to next",editor,&SceneEditor::change_to_next);  y += 20;
-  screen::make_button(0,y,"insert new to previous",editor,&SceneEditor::insert_new_to_previous);  y += 20;
-  screen::make_button(0,y,"insert new to next",editor,&SceneEditor::insert_new_to_next);  y += 20;
   screen::make_button(0,y,"copy this",editor,&SceneEditor::copy_this);  y += 20;
   screen::make_button(0,y,"apply copy",editor,&SceneEditor::apply_copy);  y += 20;
   screen::make_button(0,y,"erase this",editor,&SceneEditor::erase_this);  y += 20;
   screen::make_button(0,y,"animate",editor,&SceneEditor::start_to_animate);  y += 20;
+
+  y = screen::height/2-32;
+
+  screen::make_button(               0,y   ,"<",editor,&SceneEditor::change_to_previous);
+  screen::make_button(screen::width-16,y   ,">",editor,&SceneEditor::change_to_next);
+  screen::make_button(               0,y+64,"+",editor,&SceneEditor::insert_new_to_previous);
+  screen::make_button(screen::width-16,y+64,"+",editor,&SceneEditor::insert_new_to_next);
+
 
   render(true);
 

@@ -3,21 +3,22 @@
 
 
 #include<cstdint>
+#include<string>
 
 
 struct
 Glyph
 {
-  static constexpr int  size = 8;
+  static constexpr int  size = 14;
 
-  uint8_t  data[size];
+  uint16_t  data[size];
 
 };
 
 
 
 
-const Glyph&  get_glyph(char  c);
+const Glyph*  get_glyph(char16_t  c);
 
 
 
