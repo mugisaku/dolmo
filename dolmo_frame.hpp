@@ -16,22 +16,18 @@ struct Renderer;
 class
 Frame
 {
-  Scene&  scene;
+  Scene*  scene;
 
   std::list<DollState>  dollstate_list;
 
 public:
-  Frame(Scene&  scene_);
+  Frame(Scene*  scene_=nullptr);
 
   void     add(Doll&  doll);
   void  remove(Doll&  doll);
 
-  void  update();
-
-  void  render(Renderer&  dst, int  z_max);
-
-  void  fprint(FILE*  f) const;
-  const char*  sscan(const char*  s);
+  void    raise();
+  void  unraise();
 
 };
 

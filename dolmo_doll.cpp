@@ -19,6 +19,14 @@ root_node(root)
 
 
 
+Node&
+Doll::
+operator*()
+{
+  return *root_node;
+}
+
+
 const Node&
 Doll::
 operator*() const

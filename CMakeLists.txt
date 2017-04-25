@@ -51,6 +51,7 @@ set(SOURCES
   dolmo_node__table.cpp
   dolmo_model.cpp
   dolmo_doll.cpp
+  dolmo_dollState.cpp
   dolmo_frame.cpp
   dolmo_scene.cpp
   dolmo_sceneEditor.cpp

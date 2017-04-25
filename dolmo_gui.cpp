@@ -107,8 +107,6 @@ add_radio_button(const char16_t*  text, SceneEditor&  mgr, Callback  cb)
 void
 fix_radio_buttons(int  x, int  y)
 {
-  y -= 16*radio_button_list.size();
-
     for(auto&  btn: radio_button_list)
     {
       btn.Point::assign(x,y);
@@ -130,8 +128,7 @@ touch_button(int  x, int  y, bool  press)
     {
         if(btn.test(pt))
         {
-          auto  old = current_button       ;
-                      current_button = &btn;
+          current_button = &btn;
 
             if(press)
             {
@@ -139,7 +136,7 @@ touch_button(int  x, int  y, bool  press)
             }
 
 
-          return(old != current_button);
+          return true;
         }
     }
 
@@ -147,8 +144,6 @@ touch_button(int  x, int  y, bool  press)
     if(current_button)
     {
       current_button = nullptr;
-
-      return true;
     }
 
 

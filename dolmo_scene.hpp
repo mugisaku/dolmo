@@ -35,7 +35,6 @@ public:
   std::list<Frame>::iterator     new_frame(std::list<Frame>::iterator  it);
   std::list<Frame>::iterator  delete_frame(std::list<Frame>::iterator  it);
 
-  void  update();
 
   void  render(Renderer&  dst, int  z_max);
 

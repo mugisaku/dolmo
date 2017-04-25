@@ -55,18 +55,16 @@ get_current_doll() const
 }
 
 
-SceneEditor::Mode
-SceneEditor::
-get_mode() const
-{
-  return mode;
-}
-
-
 void
 SceneEditor::
 change_mode(Mode  m)
 {
+    if(mode == Mode::animation)
+    {
+      current_frame->raise();
+    }
+
+
   mode = m;
 
   current_node = nullptr;
@@ -89,7 +87,7 @@ press(Renderer&  renderer, int  x, int  y)
 {
     if(mode == Mode::allocate_doll)
     {
-      target->allocate_doll(x,y);
+      copy_frame.add(target->allocate_doll(x,y));
 
       needed_to_redraw = true;
     }
@@ -101,7 +99,11 @@ press(Renderer&  renderer, int  x, int  y)
 
         if(current_node)
         {
-          target->deallocate_doll(*current_node->get_doll());
+          auto&  doll = *current_node->get_doll();
+
+          target->deallocate_doll(doll);
+
+          copy_frame.remove(doll);
 
           needed_to_redraw = true;
         }
@@ -134,12 +136,7 @@ render(Renderer&  dst, bool  force)
     {
       dst.clear();
 
-
-      auto  frame = (mode == Mode::animation)? animation_frame
-                                             :   current_frame;
-
-      frame->render(dst,z_max);
-
+      target->render(dst,z_max);
 
       needed_to_redraw = false;
 
@@ -155,7 +152,7 @@ void
 SceneEditor::
 step()
 {
-    if(mode == Mode::animation)
+    if((mode == Mode::animation) && ((**target).size() > 1))
     {
       auto  now = SDL_GetTicks();
 
@@ -168,6 +165,8 @@ step()
               animation_frame = (*target)->begin();
             }
 
+
+          animation_frame->raise();
 
           needed_to_redraw = true;
         }

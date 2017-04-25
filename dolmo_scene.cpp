@@ -1,6 +1,7 @@
 #include"dolmo_scene.hpp"
 #include"dolmo_frame.hpp"
 #include"dolmo_doll.hpp"
+#include"dolmo_dollState.hpp"
 #include"dolmo_screen.hpp"
 #include"dolmo_model.hpp"
 
@@ -10,9 +11,7 @@
 Scene::
 Scene()
 {
-  frame_list.emplace_back(*this);
-
-  allocate_doll(screen::width/2,screen::width/2-32);
+  frame_list.emplace_back(this);
 }
 
 
@@ -53,18 +52,26 @@ void
 Scene::
 deallocate_doll(Doll&  target)
 {
-    for(auto&  doll: doll_list)
+  auto   it = doll_list.begin();
+  auto  end = doll_list.end();
+
+    while(it != end)
     {
-        if(&doll == &target)
+        if(&*it == &target)
         {
             for(auto&  frame: frame_list)
             {
-              frame.remove(doll);
+              frame.remove(target);
             }
 
 
-          return;
+          doll_list.erase(it);
+
+          break;
         }
+
+
+      ++it;
     }
 }
 
@@ -95,17 +102,6 @@ delete_frame(std::list<Frame>::iterator  it)
 }
 
 
-
-
-void
-Scene::
-update()
-{
-    for(auto&  doll: doll_list)
-    {
-      doll.update();
-    }
-}
 
 
 void

@@ -95,7 +95,9 @@ save_as_png(Renderer&  renderer, const char*  base)
     {
       renderer.clear();
 
-      frame.render(renderer,z_max_max);
+      frame.raise();
+
+      target->render(renderer,z_max_max);
 
         for(int  y = 0;  y < ren_h;  ++y)
         {

@@ -20,6 +20,9 @@
 namespace{
 
 
+constexpr int  top_panel_height = 32;
+
+
 Scene*
 scn;
 
@@ -29,7 +32,7 @@ editor;
 
 
 Renderer
-renderer(screen::width,screen::height-24);
+renderer(screen::width,screen::height-top_panel_height);
 
 
 bool
@@ -48,19 +51,23 @@ render(bool  ok)
 
       screen::clear();
 
-      screen::put_renderer(renderer,0,24);
+      screen::put_renderer(renderer,0,top_panel_height);
 
         if(!hide_menu)
         {
           auto  ns = editor.get_numbers();
 
+          screen::fill_rectangle(gray,0,0,screen::width,top_panel_height);
+
           char  buf[80];
 
           snprintf(buf,sizeof(buf),"FRAME[%2d/%2d]",ns.first+1,ns.second);
 
-          screen::fill_rectangle(gray,0,0,screen::width,24);
-
           screen::put_string(buf,screen::white,0,0);
+
+          snprintf(buf,sizeof(buf),"Z_MAX[%2d/%2d]",editor.get_z_max(),SceneEditor::z_max_max);
+
+          screen::put_string(buf,screen::white,0,16);
 
           gui::render_buttons();
         }
@@ -81,9 +88,9 @@ process_button(const SDL_MouseButtonEvent&  evt)
     {
         if(hide_menu || !gui::touch_button(evt.x,evt.y,true))
         {
-            if(evt.y >= 24)
+            if(evt.y >= top_panel_height)
             {
-              editor.press(renderer,evt.x,evt.y-24);
+              editor.press(renderer,evt.x,evt.y-top_panel_height);
             }
         }
     }
@@ -107,9 +114,9 @@ process_motion(const SDL_MouseMotionEvent&  evt)
     }
 
 
-    if(evt.y >= 24)
+    if(evt.y >= top_panel_height)
     {
-      editor.move_pointer(evt.x,evt.y-24);
+      editor.move_pointer(evt.x,evt.y-top_panel_height);
     }
 }
 
@@ -230,15 +237,14 @@ main(int  argc, char**  argv)
   editor.open(*scn);
 
 
-  int  y = 20;
+  gui::make_button(16*20, 0,u"Copy",editor,&SceneEditor::copy_this);
+  gui::make_button(16*20,16,u"Restore",editor,&SceneEditor::apply_copy);
 
-  gui::make_button(0,y,u"increase z max",editor,&SceneEditor::increase_z_max);  y += 20;
-  gui::make_button(0,y,u"decrease z max",editor,&SceneEditor::decrease_z_max);  y += 20;
-  gui::make_button(0,y,u"copy this",editor,&SceneEditor::copy_this);  y += 20;
-  gui::make_button(0,y,u"apply copy",editor,&SceneEditor::apply_copy);  y += 20;
+  gui::make_button(16*12,16,u"-",editor,&SceneEditor::decrease_z_max);
+  gui::make_button(16*13,16,u"+",editor,&SceneEditor::increase_z_max);
 
 
-  y = screen::height/2-32;
+  int  y = screen::height/2-32;
 
   gui::make_button(               0,y   ,u"<",editor,&SceneEditor::change_to_previous);
   gui::make_button(screen::width-16,y   ,u">",editor,&SceneEditor::change_to_next);
@@ -253,7 +259,7 @@ main(int  argc, char**  argv)
   gui::add_radio_button(u"位置変更",editor,&SceneEditor::change_to_move_position);
   gui::add_radio_button(    u"動画",editor,&SceneEditor::change_to_animate);
 
-  gui::fix_radio_buttons(0,screen::height);
+  gui::fix_radio_buttons(0,top_panel_height);
 
   render(true);
 

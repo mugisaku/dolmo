@@ -6,9 +6,9 @@
 #include"dolmo_node.hpp"
 #include"dolmo_scene.hpp"
 #include"dolmo_renderer.hpp"
+#include"dolmo_dollState.hpp"
 
 
-struct DollState;
 
 
 class
@@ -22,6 +22,9 @@ Doll
 
   int  z_value;
 
+  friend void  DollState::store() const;
+
+
 public:
   Doll(Scene&  scene_, Node*  root, int  z, bool  rev=false);
   Doll(const Doll&   rhs) = delete;
@@ -31,6 +34,7 @@ public:
   Doll&  operator=(const Doll&   rhs) = delete;
   Doll&  operator=(      Doll&&  rhs) = delete;
 
+        Node&  operator*()      ;
   const Node&  operator*() const;
 
   void  clear();
@@ -50,48 +54,6 @@ public:
 
   void  fprint(FILE*  f) const;
   const char*   sscan(const char*  s);
-
-  template<typename  T>void  push(const T*&  it){root_node->read(it);}
-
-};
-
-
-struct
-DollState
-{
-  Doll*  const target;
-
-  int  number_table[400];
-
-  size_t  number_count;
-
-  bool  reverse_flag;
-
-  int  z_value;
-
-  DollState(Doll*  target_): target(target_){if(target){pull();}}
-
-  Doll*  operator->() const{return target;}
-
-  void  push() const
-  {
-    const int*  p = number_table;
-
-    target->push(p);
-
-//    target->reverse_flag = reverse_flag;
-//    target->change_z_value(z_value);
-  }
-
-  void  pull()
-  {
-    int*  p = number_table;
-
-    number_count = (**target).write(p,std::end(number_table));
-
-    reverse_flag = target->test_reverse_flag();
-    z_value      = target->get_z_value();
-  }
 
 };
 

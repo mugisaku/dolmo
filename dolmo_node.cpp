@@ -457,3 +457,58 @@ print() const
 
 
 
+void
+Node::
+read(const int*&  it)
+{
+  own_degree = *it++;
+
+  auto  n = *it++;
+
+    if(n != children.size())
+    {
+      printf("子要素数が一致しません\n");
+
+      throw;
+    }
+
+
+    for(auto  child: children)
+    {
+      child->read(it);
+    }
+}
+
+
+size_t
+Node::
+write(int*&  it, const int*  end) const
+{
+  size_t  count = 0;
+
+  *it++ = own_degree;
+
+  ++count;
+
+    if(it != end)
+    {
+      *it++ = children.size();
+
+      ++count;
+
+        if(it != end)
+        {
+            for(auto  child: children)
+            {
+              count += child->write(it,end);
+            }
+        }
+    }
+
+
+  return count;
+}
+
+
+
+

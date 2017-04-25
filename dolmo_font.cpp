@@ -74,6 +74,16 @@ Initializer
 
                     table[u] = dst;
                   }
+
+                else
+                  if(u == u'─')
+                  {
+                    u = '-';
+
+                    dst->unicode = u;
+
+                    table[u] = dst;
+                  }
               }
           }
 

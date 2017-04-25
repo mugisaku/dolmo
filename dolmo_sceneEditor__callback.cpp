@@ -38,8 +38,12 @@ change_to_previous()
 {
     if(current_index)
     {
+      current_frame->unraise();
+
       --current_index;
       --current_frame;
+
+      current_frame->raise();
 
       needed_to_redraw = true;
     }
@@ -52,8 +56,12 @@ change_to_next()
 {
     if(current_index < ((*target)->size()-1))
     {
+      current_frame->unraise();
+
       ++current_index;
       ++current_frame;
+
+      current_frame->raise();
 
       needed_to_redraw = true;
     }
@@ -94,13 +102,7 @@ void
 SceneEditor::
 copy_this()
 {
-    if(!copy_node)
-    {
-//      copy_node = new Scene;
-    }
-
-
-//  copy_node->reform(**target);
+  copy_frame = *current_frame;
 }
 
 
@@ -108,13 +110,9 @@ void
 SceneEditor::
 apply_copy()
 {
-    if(copy_node)
-    {
-//      (*target)->reform(*copy_node);
-      current_frame->update();
+  copy_frame.raise();
 
-      needed_to_redraw = true;
-    }
+  needed_to_redraw = true;
 }
 
 
@@ -179,9 +177,13 @@ void
 SceneEditor::
 change_to_animate()
 {
+  current_frame->unraise();
+
   change_mode(Mode::animation);
 
   animation_frame = (*target)->begin();
+
+  animation_frame->raise();
 }
 
 

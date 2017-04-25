@@ -28,7 +28,9 @@ private:
   Mode  mode;
 
   Node*  current_node;
-  Node*     copy_node;
+
+  Node*    copy_node;
+  Frame   copy_frame;
 
   Point  previous_point;
   Point   current_point;
@@ -70,7 +72,9 @@ public:
 
   std::pair<int,int>  get_numbers() const;
 
-  Mode  get_mode() const;
+  int  get_z_max() const{return z_max;}
+
+  Mode  get_mode() const{return mode;}
 
   const Doll*  get_current_doll() const;
 

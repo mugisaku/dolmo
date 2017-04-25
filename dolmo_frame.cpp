@@ -1,12 +1,13 @@
 #include"dolmo_frame.hpp"
 #include"dolmo_doll.hpp"
+#include"dolmo_dollState.hpp"
 #include"dolmo_model.hpp"
 
 
 
 
 Frame::
-Frame(Scene&  scene_):
+Frame(Scene*  scene_):
 scene(scene_)
 {
 }
@@ -31,7 +32,7 @@ remove(Doll&  doll)
 
     while(it != end)
     {
-        if(it->target == &doll)
+        if(&**it == &doll)
         {
           dollstate_list.erase(it);
 
@@ -46,46 +47,24 @@ remove(Doll&  doll)
 
 void
 Frame::
-update()
+raise()
 {
-  dollstate_list.sort([](const DollState&  a, const DollState&  b){return(a->get_z_value() < b->get_z_value());});
+//  dollstate_list.sort([](const DollState&  a, const DollState&  b){return(a->get_z_value() < b->get_z_value());});
 
     for(auto&  st: dollstate_list)
     {
-      st->update();
+      st.store();
     }
 }
 
 
 void
 Frame::
-render(Renderer&  dst, int  z_max)
+unraise()
 {
     for(auto&  st: dollstate_list)
     {
-      st->render(dst,z_max);
-    }
-}
-
-
-void
-Frame::
-fprint(FILE*  f) const
-{
-    for(auto&  st: dollstate_list)
-    {
-      st->fprint(f);
-    }
-}
-
-
-const char*
-Frame::
-sscan(const char*  s)
-{
-    for(auto&  st: dollstate_list)
-    {
-      s = st->sscan(s);
+      st.load();
     }
 }
 
