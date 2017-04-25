@@ -86,8 +86,6 @@ public:
   void  fix_angle();
   void  change_degree(int  v);
 
-  void  reform(const Node&  rhs);
-
   Node*  join(Node*  child                                                       );
   Node*  join(Node*  child, int  x, int  y, JoiningKind  jk=JoiningKind::downward);
 
@@ -101,10 +99,10 @@ public:
 
   void  change_angle(const Point&  pt);
 
-  void  update();
+  void  update(bool  reversing=false);
 
-  void  render_image(Renderer&  dst);
-  void  render(Renderer&  dst, int  z_max);
+  void  render_image(Renderer&  dst, bool  reversing);
+  void  render(Renderer&  dst, bool  reversing, int  z_max);
 
   void  fprint(FILE*  f) const;
   const char*   sscan(const char*  s);

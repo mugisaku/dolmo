@@ -155,6 +155,16 @@ change_to_move_position()
 
 }
 
+
+void
+SceneEditor::
+change_to_switch_reversing()
+{
+  change_mode(Mode::switch_reversing);
+
+}
+
+
 void
 SceneEditor::
 change_to_remove_doll()

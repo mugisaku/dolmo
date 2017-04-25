@@ -257,6 +257,7 @@ main(int  argc, char**  argv)
   gui::add_radio_button(u"人形削除",editor,&SceneEditor::change_to_remove_doll);
   gui::add_radio_button(u"角度変更",editor,&SceneEditor::change_to_move_angle);
   gui::add_radio_button(u"位置変更",editor,&SceneEditor::change_to_move_position);
+  gui::add_radio_button(u"反転切替",editor,&SceneEditor::change_to_switch_reversing);
   gui::add_radio_button(    u"動画",editor,&SceneEditor::change_to_animate);
 
   gui::fix_radio_buttons(0,top_panel_height);

@@ -110,6 +110,22 @@ press(Renderer&  renderer, int  x, int  y)
     }
 
   else
+    if(mode == Mode::switch_reversing)
+    {
+      current_node = renderer.get_cell(x,y).nodeptr;
+
+        if(current_node)
+        {
+          auto  doll = current_node->get_doll();
+
+          doll->switch_reverse_flag();
+          doll->update();
+
+          needed_to_redraw = true;
+        }
+    }
+
+  else
     if(mode != Mode::animation)
     {
       current_node = renderer.get_cell(x,y).nodeptr;

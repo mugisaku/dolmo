@@ -126,6 +126,8 @@ print_required_glyphes()
         {
             if(gl && gl->count)
             {
+              gl->count = 0;
+
               fprintf(f,"0x%04X,",gl->unicode);
 
                 for(auto  ln: gl->data)

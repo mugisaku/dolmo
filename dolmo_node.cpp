@@ -175,28 +175,6 @@ change_degree(int  v)
 }
 
 
-void
-Node::
-reform(const Node&  rhs)
-{
-  base_offset = rhs.base_offset;
-  own_degree  = rhs.own_degree;
-  angle_fixed = rhs.angle_fixed;
-
-    if(children.size() == rhs.children.size())
-    {
-      auto  dst =     children.begin();
-      auto  src = rhs.children.cbegin();
-      auto  end = rhs.children.cend();
-
-        while(src != end)
-        {
-          (*dst++)->reform(**src++);
-        }
-    }
-}
-
-
 Node*
 Node::
 join(Node*  child)
@@ -283,14 +261,11 @@ change_angle(const Point&  pt)
 
 void
 Node::
-update()
+update(bool  reversing)
 {
     if(parent)
     {
-      const auto&  d = parent->total_degree;
-      const auto&  c = parent->graph_center;
-
-      total_degree = d+own_degree;
+      total_degree = parent->total_degree+own_degree;
     }
 
   else
@@ -310,22 +285,33 @@ update()
       {
         const auto&  c = parent->graph_center;
 
-        graph_center = (c+base_offset).transform(parent->sin_value,
-                                                 parent->cos_value,c);
+        auto  pt = base_offset;
+
+          if(reversing)
+          {
+            pt.x *= -1;
+          }
+
+
+        graph_center = (c+pt).transform(parent->sin_value,
+                                        parent->cos_value,c);
       }
 
 
     for(auto  child: children)
     {
-      child->update();
+      child->update(reversing);
     }
 }
 
 
 void
 Node::
-render_image(Renderer&  dst)
+render_image(Renderer&  dst, bool  reversing)
 {
+  const auto  dst_w = dst.get_width();
+  const auto  dst_h = dst.get_height();
+
   const int      image_size = std::max(image_rect.w,image_rect.h);
   const int  rendering_size = image_size*2;
 
@@ -338,10 +324,10 @@ render_image(Renderer&  dst)
           const int  dst_x = (rendering_base.x+x);
           const int  dst_y = (rendering_base.y+y);
 
-            if((dst_x >=              0) &&
-               (dst_y >=              0) &&
-               (dst_x <  screen::width ) &&
-               (dst_y <  screen::height))
+            if((dst_x >=     0) &&
+               (dst_y >=     0) &&
+               (dst_x <  dst_w) &&
+               (dst_y <  dst_h))
             {
               Point  pt(x,y);
 
@@ -352,8 +338,20 @@ render_image(Renderer&  dst)
                    (pt.x <  image_rect.w) &&
                    (pt.y <  image_rect.h))
                 {
-                  auto  i = image::get(image_rect.x+pt.x,
-                                       image_rect.y+pt.y);
+                  int  i;
+
+                    if(reversing)
+                    {
+                      i = image::get(image_rect.x+image_rect.w-1-pt.x,
+                                     image_rect.y+pt.y);
+                    }
+
+                  else
+                    {
+                      i = image::get(image_rect.x+pt.x,
+                                     image_rect.y+pt.y);
+                    }
+
 
                     if(i)
                     {
@@ -369,17 +367,17 @@ render_image(Renderer&  dst)
 
 void
 Node::
-render(Renderer&  dst, int  z_max)
+render(Renderer&  dst, bool  reversing, int  z_max)
 {
     if(z_value <= z_max)
     {
-      render_image(dst);
+      render_image(dst,reversing);
     }
 
 
     for(auto  child: children)
     {
-      child->render(dst,z_max);
+      child->render(dst,reversing,z_max);
     }
 }
 

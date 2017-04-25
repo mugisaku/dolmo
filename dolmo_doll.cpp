@@ -45,6 +45,14 @@ test_reverse_flag() const
 }
 
 
+void
+Doll::
+switch_reverse_flag()
+{
+  reverse_flag = !reverse_flag;
+}
+
+
 int
 Doll::
 get_z_value() const
@@ -81,7 +89,7 @@ void
 Doll::
 update()
 {
-  root_node->update();
+  root_node->update(reverse_flag);
 }
 
 
@@ -89,7 +97,7 @@ void
 Doll::
 render(Renderer&  dst, int  z_max) const
 {
-  root_node->render(dst,z_max);
+  root_node->render(dst,reverse_flag,z_max);
 }
 
 

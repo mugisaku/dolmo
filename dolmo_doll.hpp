@@ -41,6 +41,8 @@ public:
 
   bool  test_reverse_flag() const;
 
+  void  switch_reverse_flag();
+
   int  get_z_value() const;
 
   const Node&  get_root_node() const;

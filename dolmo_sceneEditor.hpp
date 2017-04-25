@@ -18,6 +18,7 @@ public:
     remove_doll,
     move_position,
     move_angle,
+    switch_reversing,
     animation,
   };
 
@@ -67,6 +68,7 @@ public:
   void  change_to_animate();
   void  change_to_move_angle();
   void  change_to_move_position();
+  void  change_to_switch_reversing();
   void  change_to_remove_doll();
   void  change_to_allocate_doll();
 
