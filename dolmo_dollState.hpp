@@ -3,16 +3,20 @@
 
 
 #include<cstddef>
+#include<cstdio>
 #include"dolmo_rectangle.hpp"
+#include"json.hpp"
 
 
 struct Doll;
+struct Frame;
 
 
 class
 DollState
 {
-  Doll*  target;
+  Doll&   target;
+  Frame&   frame;
 
   Point  base_offset;
 
@@ -25,13 +29,16 @@ DollState
   int  z_value;
 
 public:
-  DollState(Doll*  target_=nullptr): target(target_){if(target){load();}}
+  DollState(Doll&  target_, Frame&  frame_);
 
-  Doll&  operator*()  const{return *target;}
-  Doll*  operator->() const{return  target;}
+  Doll&  operator*()  const{return  target;}
+  Doll*  operator->() const{return &target;}
 
   void   load()      ;
   void  store() const;
+
+  void  scan(const libjson::Value&  val);
+  libjson::Value  to_json() const;
 
 };
 

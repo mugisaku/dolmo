@@ -78,6 +78,8 @@ insert_new_to_previous()
 
       ++current_index;
 
+      target->update_index();
+
       needed_to_redraw = true;
     }
 }
@@ -93,6 +95,8 @@ insert_new_to_next()
 
       target->new_frame(++it);
 
+      target->update_index();
+
       needed_to_redraw = true;
     }
 }
@@ -102,7 +106,7 @@ void
 SceneEditor::
 copy_this()
 {
-  copy_frame = *current_frame;
+//  copy_frame = *current_frame;
 }
 
 
@@ -110,7 +114,7 @@ void
 SceneEditor::
 apply_copy()
 {
-  copy_frame.raise();
+//  copy_frame.raise();
 
   needed_to_redraw = true;
 }
@@ -130,6 +134,10 @@ erase_this()
           --current_frame;
         }
 
+
+      target->update_index();
+
+      current_frame->raise();
 
       needed_to_redraw = true;
     }
@@ -161,7 +169,6 @@ SceneEditor::
 change_to_switch_reversing()
 {
   change_mode(Mode::switch_reversing);
-
 }
 
 
@@ -170,7 +177,6 @@ SceneEditor::
 change_to_remove_doll()
 {
   change_mode(Mode::remove_doll);
-
 }
 
 
@@ -179,7 +185,6 @@ SceneEditor::
 change_to_allocate_doll()
 {
   change_mode(Mode::allocate_doll);
-
 }
 
 

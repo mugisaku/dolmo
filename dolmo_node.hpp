@@ -104,9 +104,6 @@ public:
   void  render_image(Renderer&  dst, bool  reversing);
   void  render(Renderer&  dst, bool  reversing, int  z_max);
 
-  void  fprint(FILE*  f) const;
-  const char*   sscan(const char*  s);
-
   void  print() const;
 
 

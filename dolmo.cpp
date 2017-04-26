@@ -8,6 +8,7 @@
 #include"dolmo_model.hpp"
 #include"dolmo_font.hpp"
 #include"dolmo_gui.hpp"
+#include"json_stream.hpp"
 #include<cstdlib>
 #include<string>
 
@@ -147,7 +148,12 @@ load(char*  path)
 
       fclose(f);
 
-      scn->sscan(s.data());
+
+      libjson::Stream  st(s.data());
+
+      auto  val = st.get_value();
+
+      scn->scan(val);
     }
 
 
@@ -180,11 +186,15 @@ main_loop()
             {
               editor.save_as_png(renderer,"__DOLMO");
 
-              auto  f = fopen("__DOLMO.txt","wb");
+              auto  f = fopen("__DOLMO.json","wb");
 
                 if(f)
                 {
-                  scn->fprint(f);
+                  auto  v = scn->to_json();
+
+                  auto  s = v.to_string();
+
+                  fprintf(f,"%s\n",s.data());
 
                   fclose(f);
                 }

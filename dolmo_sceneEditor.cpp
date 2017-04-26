@@ -19,7 +19,6 @@ SceneEditor():
 z_max(z_max_max),
 current_index(0),
 last_time(0),
-copy_node(nullptr),
 mode(Mode::allocate_doll),
 needed_to_redraw(true)
 {
@@ -87,7 +86,8 @@ press(Renderer&  renderer, int  x, int  y)
 {
     if(mode == Mode::allocate_doll)
     {
-      copy_frame.add(target->allocate_doll(x,y));
+//      copy_frame.add(target->allocate_doll(x,y));
+      target->allocate_doll(x,y);
 
       needed_to_redraw = true;
     }
@@ -103,7 +103,7 @@ press(Renderer&  renderer, int  x, int  y)
 
           target->deallocate_doll(doll);
 
-          copy_frame.remove(doll);
+//          copy_frame.remove(doll);
 
           needed_to_redraw = true;
         }
@@ -197,6 +197,8 @@ step()
                (current_point.y != previous_point.y))
             {
               current_node->change_angle(current_point);
+
+              current_node->get_doll()->update();
 
               previous_point = current_point;
 

@@ -5,6 +5,7 @@
 #include<list>
 #include<vector>
 #include<cstdio>
+#include"json.hpp"
 
 
 struct Doll;
@@ -15,11 +16,14 @@ struct Renderer;
 class
 Scene
 {
+  uint32_t  index;
+
   std::list<Doll>    doll_list;
   std::list<Frame>  frame_list;
 
 public:
   Scene();
+  Scene(const libjson::Value&  value);
 
         std::list<Frame>*  operator->()      {return &frame_list;}
   const std::list<Frame>*  operator->() const{return &frame_list;}
@@ -35,11 +39,13 @@ public:
   std::list<Frame>::iterator     new_frame(std::list<Frame>::iterator  it);
   std::list<Frame>::iterator  delete_frame(std::list<Frame>::iterator  it);
 
+  void  update_index();
 
   void  render(Renderer&  dst, int  z_max);
 
-  void  fprint(FILE*  f) const;
-  const char*  sscan(const char*  s);
+
+  void  scan(const libjson::Value&  val);
+  libjson::Value  to_json() const;
 
 };
 

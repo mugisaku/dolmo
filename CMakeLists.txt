@@ -57,10 +57,14 @@ set(SOURCES
   dolmo_sceneEditor.cpp
   dolmo_sceneEditor__callback.cpp
   dolmo_sceneEditor__save.cpp
+  libjson/json_stream.cpp
+  libjson/json_stream__scan.cpp
+  libjson/json_value.cpp
 )
 
 
 include_directories(.)
+include_directories(./libjson)
 include_directories(/usr/include/SDL2)
 add_executable("Dolmo${EXECUTABLE_EXTENSION}" dolmo.cpp ${SOURCES})
 

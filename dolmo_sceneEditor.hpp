@@ -30,9 +30,6 @@ private:
 
   Node*  current_node;
 
-  Node*    copy_node;
-  Frame   copy_frame;
-
   Point  previous_point;
   Point   current_point;
 

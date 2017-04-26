@@ -6,7 +6,7 @@
 #include"dolmo_node.hpp"
 #include"dolmo_scene.hpp"
 #include"dolmo_renderer.hpp"
-#include"dolmo_dollState.hpp"
+#include"dolmo_frame.hpp"
 
 
 
@@ -16,17 +16,27 @@ Doll
 {
   Scene&  scene;
 
+  int  index;
+
   std::unique_ptr<Node>  root_node;
 
   bool  reverse_flag;
 
   int  z_value;
 
-  friend void  DollState::store() const;
+  std::list<DollState>  state_list;
 
+  friend void  DollState::store() const;
+  friend Frame::~Frame();
+  friend void  Frame::add(Doll&  doll);
+  friend void  Frame::remove(Doll&  doll);
+
+  DollStateIterator     new_state(Frame&  frame);
+  void               delete_state(DollStateIterator  it);
 
 public:
   Doll(Scene&  scene_, Node*  root, int  z, bool  rev=false);
+  Doll(Scene&  scene_, const libjson::Value&  value);
   Doll(const Doll&   rhs) = delete;
   Doll(      Doll&&  rhs) = delete;
 
@@ -39,6 +49,9 @@ public:
 
   void  clear();
 
+  void  change_index(uint32_t  i);
+  int      get_index() const{return index;}
+
   bool  test_reverse_flag() const;
 
   void  switch_reverse_flag();
@@ -50,12 +63,14 @@ public:
   void  change_position(const Point&  pt);
   void  add_to_position(const Point&  pt);
 
+
   void  update();
 
   void  render(Renderer&  dst, int  z_max) const;
 
-  void  fprint(FILE*  f) const;
-  const char*   sscan(const char*  s);
+
+  void  scan(const libjson::Value&  val);
+  libjson::Value  to_json() const;
 
 };
 

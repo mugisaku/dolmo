@@ -5,23 +5,36 @@
 #include<list>
 #include<vector>
 #include<cstdio>
+#include"dolmo_dollState.hpp"
+#include"json.hpp"
 
 
-struct Doll;
-struct DollState;
 struct Scene;
 struct Renderer;
+
+
+using DollStateIterator = std::list<DollState>::iterator;
 
 
 class
 Frame
 {
-  Scene*  scene;
+  Scene&  scene;
 
-  std::list<DollState>  dollstate_list;
+  int  index;
+
+  std::list<DollStateIterator>  dollstate_list;
 
 public:
-  Frame(Scene*  scene_=nullptr);
+  Frame(Scene&  scene_);
+  Frame(const Frame&  rhs)=delete;
+ ~Frame();
+
+
+  Frame&  operator=(const Frame&  rhs)=delete;
+
+  void  change_index(uint32_t  i);
+  int      get_index() const{return index;}
 
   void     add(Doll&  doll);
   void  remove(Doll&  doll);

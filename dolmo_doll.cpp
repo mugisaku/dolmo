@@ -17,6 +17,13 @@ root_node(root)
 }
 
 
+Doll::
+Doll(Scene&  scene_, const libjson::Value&  value):
+scene(scene_)
+{
+}
+
+
 
 
 Node&
@@ -93,6 +100,26 @@ update()
 }
 
 
+
+
+DollStateIterator
+Doll::
+new_state(Frame&  frame)
+{
+  return state_list.emplace(state_list.cend(),*this,frame);
+}
+
+
+void
+Doll::
+delete_state(DollStateIterator  it)
+{
+  state_list.erase(it);
+}
+
+
+
+
 void
 Doll::
 render(Renderer&  dst, int  z_max) const
@@ -101,19 +128,33 @@ render(Renderer&  dst, int  z_max) const
 }
 
 
+
+
 void
 Doll::
-fprint(FILE*  f) const
+scan(const libjson::Value&  val)
 {
-  root_node->fprint(f);
 }
 
 
-const char*
+libjson::Value
 Doll::
-sscan(const char*  s)
+to_json() const
 {
-  return root_node->sscan(s);
+  libjson::Object  obj;
+
+
+  libjson::Array  arr;
+
+    for(auto&  st: state_list)
+    {
+      arr.emplace_back(st->to_json());
+    }
+
+
+  obj.emplace_back(std::string("state list"),std::move(arr));
+
+  return libjson::Value(std::move(obj));
 }
 
 

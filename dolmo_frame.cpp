@@ -7,9 +7,19 @@
 
 
 Frame::
-Frame(Scene*  scene_):
+Frame(Scene&  scene_):
 scene(scene_)
 {
+}
+
+
+Frame::
+~Frame()
+{
+    for(auto&  it: dollstate_list)
+    {
+      (**it).delete_state(it);
+    }
 }
 
 
@@ -17,9 +27,19 @@ scene(scene_)
 
 void
 Frame::
+change_index(uint32_t  i)
+{
+  index = i;
+}
+
+
+void
+Frame::
 add(Doll&  doll)
 {
-  dollstate_list.emplace_back(&doll);
+  auto  it = doll.new_state(*this);
+
+  dollstate_list.emplace_back(it);
 }
 
 
@@ -32,8 +52,10 @@ remove(Doll&  doll)
 
     while(it != end)
     {
-        if(&**it == &doll)
+        if(&***it == &doll)
         {
+          doll.delete_state(*it);
+
           dollstate_list.erase(it);
 
           break;
@@ -49,11 +71,9 @@ void
 Frame::
 raise()
 {
-//  dollstate_list.sort([](const DollState&  a, const DollState&  b){return(a->get_z_value() < b->get_z_value());});
-
     for(auto&  st: dollstate_list)
     {
-      st.store();
+      st->store();
     }
 }
 
@@ -64,7 +84,7 @@ unraise()
 {
     for(auto&  st: dollstate_list)
     {
-      st.load();
+      st->load();
     }
 }
 

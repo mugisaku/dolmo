@@ -11,7 +11,13 @@
 Scene::
 Scene()
 {
-  frame_list.emplace_back(this);
+  frame_list.emplace_back(*this);
+}
+
+
+Scene::
+Scene(const libjson::Value&  value)
+{
 }
 
 
@@ -76,19 +82,34 @@ deallocate_doll(Doll&  target)
 }
 
 
+
+
+void
+Scene::
+update_index()
+{
+  int  i = 0;
+
+    for(auto&  frame: frame_list)
+    {
+      frame.change_index(i++);
+    }
+}
+
+
 std::list<Frame>::iterator
 Scene::
 new_frame(std::list<Frame>::iterator  it)
 {
-  auto  base = it;
+  auto  res = frame_list.emplace(it,*this);
 
-    if(base == frame_list.end())
+    for(auto&  doll: doll_list)
     {
-      --base;
+      res->add(doll);
     }
 
 
-  auto  res = frame_list.emplace(it,*base);
+  update_index();
 
   return res;
 }
@@ -98,7 +119,11 @@ std::list<Frame>::iterator
 Scene::
 delete_frame(std::list<Frame>::iterator  it)
 {
-  return frame_list.erase(it);
+  auto  res = frame_list.erase(it);
+
+  update_index();
+
+  return res;
 }
 
 
@@ -115,24 +140,65 @@ render(Renderer&  dst, int  z_max)
 }
 
 
-void
+
+
+libjson::Value
 Scene::
-fprint(FILE*  f) const
+to_json() const
 {
-    for(auto&  doll: doll_list)
+  libjson::Object  obj;
+
+  obj.emplace_back(std::string("doll list"),libjson::Value(libjson::Array()));
+
+
+  libjson::Array  arr;
+
+/*
+  auto   it = frame_list.cbegin();
+  auto  end = frame_list.cend();
+
+    if(it != end)
     {
-      doll.fprint(f);
+//      arr.emplace_back(it++->to_json());
+
+        while(it != end)
+        {
+//          arr.emplace_back(it++->to_json());
+        }
     }
+*/
+
+
+  obj.emplace_back(std::string("frame list"),libjson::Value(std::move(arr)));
+
+
+  return libjson::Value(std::move(obj));
 }
 
 
-const char*
+void
 Scene::
-sscan(const char*  s)
+scan(const libjson::Value&  val)
 {
-    for(auto&  doll: doll_list)
+    if(val == libjson::ValueKind::object)
     {
-      s = doll.sscan(s);
+       doll_list.clear();
+      frame_list.clear();
+
+      const libjson::Array*  doll_list_arr = nullptr;
+
+        for(auto&  member: val->object)
+        {
+             if(member.name == "doll number")
+             {
+               auto  n = member.value->number;
+
+                 while(n--)
+                 {
+//                   doll_list.emplace_back(*this);
+                 }
+             }
+        }
     }
 }
 

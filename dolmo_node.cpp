@@ -251,9 +251,6 @@ change_angle(const Point&  pt)
             {
               own_degree -= parent->total_degree;
             }
-
-
-          update();
         }
     }
 }
@@ -382,58 +379,6 @@ render(Renderer&  dst, bool  reversing, int  z_max)
 }
 
 
-
-
-const char*
-Node::
-sscan(const char*  s)
-{
-  int  d;
-  int  sz;
-  int  n;
-
-    if(sscanf(s," %d , %d , %n",&d,&sz,&n) >= 2)
-    {
-        if(sz != children.size())
-        {
-          return nullptr;
-        }
-
-
-      own_degree = d;
-
-      s += n;
-
-        for(auto  child: children)
-        {
-          s = child->sscan(s);
-
-            if(!s)
-            {
-              break;
-            }
-        }
-
-
-      return s;
-    }
-
-
-  return nullptr;
-}
-
-
-void
-Node::
-fprint(FILE*  f) const
-{
-  fprintf(f,"%d,%d,",own_degree,children.size());
-
-    for(auto  child: children)
-    {
-      child->fprint(f);
-    }
-}
 
 
 void
