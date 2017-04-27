@@ -9,12 +9,19 @@
 namespace{
 
 
-int  width;
-int  height;
+struct
+Picture
+{
+  int  width;
+  int  height;
+
+  std::vector<uint8_t>  table;
+
+};
 
 
-std::vector<uint8_t>
-table;
+std::vector<Picture>
+pictures(2);
 
 
 }
@@ -26,7 +33,7 @@ namespace image{
 
 
 void
-open(const char*  path)
+open(int  i, const char*  path)
 {
   auto  f = fopen(path,"rb");
 
@@ -49,12 +56,14 @@ open(const char*  path)
   const auto       depth = png_get_bit_depth(   png,png_info);
   const auto  color_type = png_get_color_type(  png,png_info);
 
+  auto&  pic = pictures[i];
+
     if(color_type == PNG_COLOR_TYPE_PALETTE)
     {
-      width  = w;
-      height = h;
+      pic.width  = w;
+      pic.height = h;
 
-      table.resize(w*h);
+      pic.table.resize(w*h);
 
         if(depth < 8)
         {
@@ -64,7 +73,7 @@ open(const char*  path)
 
       auto  buffer = new uint8_t[w];
 
-      auto  dst = table.begin();
+      auto  dst = pic.table.begin();
 
         for(int  y = 0;  y < h;  ++y)
         {
@@ -91,9 +100,11 @@ open(const char*  path)
 
 
 int
-get(int  x, int  y)
+get(int  i, int  x, int  y)
 {
-  return table[width*y+x];
+  const auto&  pic = pictures[i];
+
+  return pic.table[(pic.width*y)+x];
 }
 
 

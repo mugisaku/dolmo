@@ -238,7 +238,8 @@ main(int  argc, char**  argv)
 
   gui::initialize();
 
-  image::open("dolmo_parts.png");
+  image::open(0,"dolmo_human_parts.png");
+  image::open(1,"dolmo_horse_parts.png");
 
   gray = screen::get_color(0x3F,0x3F,0x3F);
 

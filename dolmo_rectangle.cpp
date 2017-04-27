@@ -56,6 +56,14 @@ operator-(const Point&  rhs) const
 }
 
 
+Point
+Point::
+operator*(double  rate) const
+{
+  return Point(x*rate,y*rate);
+}
+
+
 Point&
 Point::
 operator+=(const Point&  rhs)
@@ -73,6 +81,17 @@ operator-=(const Point&  rhs)
 {
   x -= rhs.x;
   y -= rhs.y;
+
+  return *this;
+}
+
+
+Point&
+Point::
+operator*=(double  rate)
+{
+  x *= rate;
+  y *= rate;
 
   return *this;
 }

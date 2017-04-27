@@ -16,6 +16,7 @@ Node(int  x, int  y):
 name("root"),
 joining_kind(JoiningKind::none),
 z_value(0),
+picture_index(0),
 parent(nullptr),
 doll(nullptr),
 base_offset(x,y),
@@ -25,12 +26,13 @@ angle_fixed(false)
 
 
 Node::
-Node(const char*  name_, int  z, Rect&&  img_rect, Point&&  img_center_):
+Node(const char*  name_, int  z, int  picture_index_, Rect&&  img_rect, Point&&  img_center_):
 name(name_),
 joining_kind(JoiningKind::none),
 z_value(z),
 parent(nullptr),
 doll(nullptr),
+picture_index(picture_index_),
 image_rect(img_rect),
 image_center(img_center_),
 own_degree(0),
@@ -61,14 +63,15 @@ operator=(const Node&  rhs) noexcept
 {
   clear();
 
-  name         = rhs.name;
-  joining_kind = rhs.joining_kind;
-  z_value      = rhs.z_value;
-  image_rect   = rhs.image_rect;
-  image_center = rhs.image_center;
-  own_degree   = rhs.own_degree;
-  base_offset  = rhs.base_offset;
-  angle_fixed  = rhs.angle_fixed;
+  name          = rhs.name;
+  joining_kind  = rhs.joining_kind;
+  z_value       = rhs.z_value;
+  picture_index = rhs.picture_index;
+  image_rect    = rhs.image_rect;
+  image_center  = rhs.image_center;
+  own_degree    = rhs.own_degree;
+  base_offset   = rhs.base_offset;
+  angle_fixed   = rhs.angle_fixed;
 
     for(auto  child: rhs.children)
     {
@@ -213,13 +216,19 @@ join(Node*  child, int  x, int  y, JoiningKind  jk)
 
 void
 Node::
-change_angle(const Point&  pt)
+change_angle(const Point&  pt, JoiningKind  jk)
 {
+    if(jk == JoiningKind::none)
+    {
+      jk = joining_kind;
+    }
+
+
     if(angle_fixed)
     {
         if(parent)
         {
-          parent->change_angle(pt);
+          parent->change_angle(pt,jk);
         }
     }
 
@@ -233,13 +242,19 @@ change_angle(const Point&  pt)
         {
           auto  r = -std::atan2(y,x);
 
-            switch(joining_kind)
+            switch(jk)
             {
           case(JoiningKind::upward):
               r += (pi*2)+((pi/2)*1);
               break;
           case(JoiningKind::downward):
               r += (pi*2)+((pi/2)*3);
+              break;
+          case(JoiningKind::to_left):
+              r += (pi*2)+((pi/2)*2);
+              break;
+          case(JoiningKind::to_right):
+              r += (pi*2)+((pi/2)*0);
               break;
           default:;
             }
@@ -318,8 +333,8 @@ render_image(Renderer&  dst, bool  reversing)
     {
         for(int  x = -image_size;  x < rendering_size;  ++x)
         {
-          const int  dst_x = (rendering_base.x+x);
-          const int  dst_y = (rendering_base.y+y);
+          int  dst_x = (rendering_base.x+x);
+          int  dst_y = (rendering_base.y+y);
 
             if((dst_x >=     0) &&
                (dst_y >=     0) &&
@@ -339,14 +354,14 @@ render_image(Renderer&  dst, bool  reversing)
 
                     if(reversing)
                     {
-                      i = image::get(image_rect.x+image_rect.w-1-pt.x,
-                                     image_rect.y+pt.y);
+                      i = image::get(picture_index,image_rect.x+image_rect.w-1-pt.x,
+                                                   image_rect.y+pt.y);
                     }
 
                   else
                     {
-                      i = image::get(image_rect.x+pt.x,
-                                     image_rect.y+pt.y);
+                      i = image::get(picture_index,image_rect.x+pt.x,
+                                                   image_rect.y+pt.y);
                     }
 
 

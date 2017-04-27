@@ -5,7 +5,8 @@
 struct Node;
 
 
-const Node&  get_model();
+const Node&  get_human_model();
+const Node&  get_horse_model();
 
 
 

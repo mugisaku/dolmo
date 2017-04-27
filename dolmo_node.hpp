@@ -51,6 +51,8 @@ Node
   Node*                 parent;
   std::vector<Node*>  children;
 
+  int  picture_index;
+
   Rect  image_rect;//このノードが使用する描画元像画像領域
 
   Point  image_center;//描画元画像を回転処理するときの中心位置。値は、image_rectからの相対位置
@@ -70,7 +72,7 @@ Node
 
 public:
   Node(int  x=0, int  y=0);
-  Node(const char*  name_, int  z, Rect&&  img_rect, Point&&  img_center_);
+  Node(const char*  name_, int  z, int  picture_index_, Rect&&  img_rect, Point&&  img_center_);
   Node(const Node&  rhs) noexcept;
  ~Node();
 
@@ -97,7 +99,7 @@ public:
   const Point&  get_base_offset() const;
   const Point&  get_graph_center() const;
 
-  void  change_angle(const Point&  pt);
+  void  change_angle(const Point&  pt, JoiningKind  jk=JoiningKind::none);
 
   void  update(bool  reversing=false);
 

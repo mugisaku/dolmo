@@ -6,9 +6,9 @@
 
 namespace image{
 
-void  open(const char*  path);
+void  open(int  i, const char*  path);
 
-int  get(int  x, int  y);
+int  get(int  i, int  x, int  y);
 
 
 }

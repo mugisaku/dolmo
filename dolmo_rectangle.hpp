@@ -19,9 +19,11 @@ Point
 
   Point  operator+(const Point&  rhs) const;
   Point  operator-(const Point&  rhs) const;
+  Point  operator*(double  rate) const;
 
   Point&  operator+=(const Point&  rhs);
   Point&  operator-=(const Point&  rhs);
+  Point&  operator*=(double  rate);
 
   Point  transform(double  radian, const Point&  center) const;
   Point  transform(double  sin_value, double  cos_value, const Point&  center) const;

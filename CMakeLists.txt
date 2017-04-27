@@ -49,7 +49,8 @@ set(SOURCES
   dolmo_font.cpp
   dolmo_node.cpp
   dolmo_node__table.cpp
-  dolmo_model.cpp
+  dolmo_human_model.cpp
+  dolmo_horse_model.cpp
   dolmo_doll.cpp
   dolmo_dollState.cpp
   dolmo_frame.cpp
