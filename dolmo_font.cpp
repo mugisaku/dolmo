@@ -8,7 +8,12 @@ namespace{
 
 
 Glyph*
-table[0x10000];
+pointer_table[0x10000];
+
+
+#ifdef EMSCRIPTEN
+#include"builddir/font_glyphes.cpp"
+#endif
 
 
 uint16_t
@@ -35,6 +40,28 @@ Initializer
 {
   Initializer()
   {
+#ifdef EMSCRIPTEN
+    auto  n = sizeof(table)/(sizeof(uint16_t)*(Glyph::size+1));
+
+    const uint16_t*  p = table;
+
+      while(n--)
+      {
+        auto  u = *p++;
+
+        auto  gl = new Glyph;
+
+        gl->unicode = u;
+
+          for(int  y = 0;  y < Glyph::size;  ++y)
+          {
+            gl->data[y] = *p++;
+          }
+
+
+        pointer_table[u] = gl;
+      }
+#else
     auto  f = fopen("/usr/local/share/oat/font.bin","rb");
 
       if(!f)
@@ -51,7 +78,7 @@ Initializer
           {
             auto  u = fgetc16be(f);
 
-            auto&  dst = table[u];
+            auto&  dst = pointer_table[u];
 
               if(!dst)
               {
@@ -72,7 +99,7 @@ Initializer
 
                     dst->unicode = u;
 
-                    table[u] = dst;
+                    pointer_table[u] = dst;
                   }
 
                 else
@@ -82,7 +109,7 @@ Initializer
 
                     dst->unicode = u;
 
-                    table[u] = dst;
+                    pointer_table[u] = dst;
                   }
               }
           }
@@ -90,6 +117,7 @@ Initializer
 
         fclose(f);
       }
+#endif
   }
 
 } init;
@@ -101,7 +129,7 @@ Initializer
 const Glyph*
 get_glyph(char16_t  c)
 {
-  auto  g = table[c];
+  auto  g = pointer_table[c];
 
     if(g)
     {
@@ -122,7 +150,7 @@ print_required_glyphes()
     {
       fprintf(f,"const uint16_t\ntable[] =\n{\n");
 
-        for(auto  gl: table)
+        for(auto  gl: pointer_table)
         {
             if(gl && gl->count)
             {
@@ -132,7 +160,7 @@ print_required_glyphes()
 
                 for(auto  ln: gl->data)
                 {
-                  fprintf(f,"0x%04X,",gl->unicode);
+                  fprintf(f,"0x%04X,",ln);
                 }
 
 

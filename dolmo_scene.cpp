@@ -76,6 +76,8 @@ deallocate_doll(Doll&  target)
             }
 
 
+          copybuffer_frame.remove(target);
+
           doll_list.erase(it);
 
           break;
@@ -84,9 +86,6 @@ deallocate_doll(Doll&  target)
 
       ++it;
     }
-
-
-  copybuffer_frame.remove(target);
 }
 
 

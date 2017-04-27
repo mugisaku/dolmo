@@ -86,7 +86,6 @@ press(Renderer&  renderer, int  x, int  y)
 {
     if(mode == Mode::allocate_doll)
     {
-//      copy_frame.add(target->allocate_doll(x,y));
       target->allocate_doll(x,y);
 
       needed_to_redraw = true;
@@ -102,8 +101,6 @@ press(Renderer&  renderer, int  x, int  y)
           auto&  doll = *current_node->get_doll();
 
           target->deallocate_doll(doll);
-
-//          copy_frame.remove(doll);
 
           needed_to_redraw = true;
         }

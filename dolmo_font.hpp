@@ -16,6 +16,7 @@ Glyph
   uint16_t  data[size];
 
   int  count;
+
 };
 
 
