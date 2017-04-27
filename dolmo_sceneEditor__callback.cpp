@@ -106,7 +106,9 @@ void
 SceneEditor::
 copy_this()
 {
-//  copy_frame = *current_frame;
+  current_frame->unraise();
+
+  target->backup_frame(*current_frame);
 }
 
 
@@ -114,7 +116,9 @@ void
 SceneEditor::
 apply_copy()
 {
-//  copy_frame.raise();
+  target->restore_frame(*current_frame);
+
+  current_frame->raise();
 
   needed_to_redraw = true;
 }

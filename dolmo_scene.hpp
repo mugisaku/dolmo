@@ -5,11 +5,10 @@
 #include<list>
 #include<vector>
 #include<cstdio>
-#include"json.hpp"
+#include"dolmo_frame.hpp"
 
 
 struct Doll;
-struct Frame;
 struct Renderer;
 
 
@@ -20,6 +19,8 @@ Scene
 
   std::list<Doll>    doll_list;
   std::list<Frame>  frame_list;
+
+  Frame  copybuffer_frame;
 
 public:
   Scene();
@@ -38,6 +39,9 @@ public:
 
   std::list<Frame>::iterator     new_frame(std::list<Frame>::iterator  it);
   std::list<Frame>::iterator  delete_frame(std::list<Frame>::iterator  it);
+
+  void   backup_frame(const Frame&  frame) const;
+  void  restore_frame(const Frame&  frame) const;
 
   void  update_index();
 

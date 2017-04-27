@@ -9,15 +9,18 @@
 
 
 Scene::
-Scene()
+Scene():
+copybuffer_frame(*this)
 {
   frame_list.emplace_back(*this);
 }
 
 
 Scene::
-Scene(const libjson::Value&  value)
+Scene(const libjson::Value&  value):
+copybuffer_frame(*this)
 {
+  scan(value);
 }
 
 
@@ -50,6 +53,8 @@ allocate_doll(int  x, int  y)
     }
 
 
+  copybuffer_frame.add(bk);
+
   return bk;
 }
 
@@ -79,6 +84,27 @@ deallocate_doll(Doll&  target)
 
       ++it;
     }
+
+
+  copybuffer_frame.remove(target);
+}
+
+
+
+
+void
+Scene::
+backup_frame(const Frame&  frame) const
+{
+  copybuffer_frame.copy(frame);
+}
+
+
+void
+Scene::
+restore_frame(const Frame&  frame) const
+{
+  frame.copy(copybuffer_frame);
 }
 
 

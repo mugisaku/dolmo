@@ -37,6 +37,8 @@ public:
   void   load()      ;
   void  store() const;
 
+  void  copy(const DollState&  src);
+
   void  scan(const libjson::Value&  val);
   libjson::Value  to_json() const;
 

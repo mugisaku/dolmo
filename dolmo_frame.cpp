@@ -69,7 +69,56 @@ remove(Doll&  doll)
 
 void
 Frame::
-raise()
+copy(const Frame&  src) const
+{
+    if(&scene != &src.scene)
+    {
+      printf("シーンが違います\n");
+
+      report;
+
+      throw;
+    }
+
+
+  auto  n = src.dollstate_list.size();
+
+    if(n != dollstate_list.size())
+    {
+      printf("状態数が一致しません\n");
+
+      report;
+
+      throw;
+    }
+
+
+  auto  dst_it =     dollstate_list.cbegin();
+  auto  src_it = src.dollstate_list.cbegin();
+
+    while(n--)
+    {
+            DollState&  dst_st = **dst_it++;
+      const DollState&  src_st = **src_it++;
+
+        if(&*dst_st != &*src_st)
+        {
+          printf("ターゲットが一致しません\n");
+
+          report;
+
+          throw;
+        }
+
+
+      dst_st.copy(src_st);
+    }
+}
+
+
+void
+Frame::
+raise() const
 {
     for(auto&  st: dollstate_list)
     {
@@ -80,7 +129,7 @@ raise()
 
 void
 Frame::
-unraise()
+unraise() const
 {
     for(auto&  st: dollstate_list)
     {

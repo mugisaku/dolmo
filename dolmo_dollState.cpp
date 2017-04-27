@@ -1,5 +1,6 @@
 #include"dolmo_dollState.hpp"
 #include"dolmo_doll.hpp"
+#include<cstring>
 
 
 
@@ -49,6 +50,20 @@ store() const
 
       target.update();
     }
+}
+
+
+void
+DollState::
+copy(const DollState&  src)
+{
+  std::memcpy(&number_table,&src.number_table,sizeof(*number_table)*src.number_count);
+
+  number_count = src.number_count;
+
+  base_offset  = src.base_offset;
+  z_value      = src.z_value;
+  reverse_flag = src.reverse_flag;
 }
 
 

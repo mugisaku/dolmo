@@ -39,8 +39,10 @@ public:
   void     add(Doll&  doll);
   void  remove(Doll&  doll);
 
-  void    raise();
-  void  unraise();
+  void  copy(const Frame&  src) const;
+
+  void    raise() const;
+  void  unraise() const;
 
 };
 
