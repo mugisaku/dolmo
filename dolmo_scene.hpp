@@ -9,6 +9,7 @@
 
 
 struct Doll;
+struct Node;
 struct Renderer;
 
 
@@ -34,7 +35,7 @@ public:
 
   void  clear();
 
-  Doll&    allocate_doll(int  x, int  y);
+  Doll&    allocate_doll(const Node&  model, int  x, int  y);
   void   deallocate_doll(Doll&  target);
 
   std::list<Frame>::iterator     new_frame(std::list<Frame>::iterator  it);

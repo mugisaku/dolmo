@@ -264,7 +264,8 @@ main(int  argc, char**  argv)
 
   gui::make_button(screen::width-(16*3),screen::height-16,u"DEL",editor,&SceneEditor::erase_this);
 
-  gui::add_radio_button(u"人形配置",editor,&SceneEditor::change_to_allocate_doll);
+  gui::add_radio_button(u"人形(人)配置",editor,&SceneEditor::change_to_allocate_human_doll);
+  gui::add_radio_button(u"人形(馬)配置",editor,&SceneEditor::change_to_allocate_horse_doll);
   gui::add_radio_button(u"人形削除",editor,&SceneEditor::change_to_remove_doll);
   gui::add_radio_button(u"角度変更",editor,&SceneEditor::change_to_move_angle);
   gui::add_radio_button(u"位置変更",editor,&SceneEditor::change_to_move_position);

@@ -19,7 +19,7 @@ SceneEditor():
 z_max(z_max_max),
 current_index(0),
 last_time(0),
-mode(Mode::allocate_doll),
+mode(Mode::allocate_human_doll),
 needed_to_redraw(true)
 {
 }
@@ -84,9 +84,17 @@ void
 SceneEditor::
 press(Renderer&  renderer, int  x, int  y)
 {
-    if(mode == Mode::allocate_doll)
+    if(mode == Mode::allocate_human_doll)
     {
-      target->allocate_doll(x,y);
+      target->allocate_doll(get_human_model(),x,y);
+
+      needed_to_redraw = true;
+    }
+
+  else
+    if(mode == Mode::allocate_horse_doll)
+    {
+      target->allocate_doll(get_horse_model(),x,y);
 
       needed_to_redraw = true;
     }

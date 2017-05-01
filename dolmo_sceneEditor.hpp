@@ -14,7 +14,8 @@ public:
   static constexpr int  z_max_max = 4;
 
   enum class Mode{
-    allocate_doll,
+    allocate_human_doll,
+    allocate_horse_doll,
     remove_doll,
     move_position,
     move_angle,
@@ -67,7 +68,8 @@ public:
   void  change_to_move_position();
   void  change_to_switch_reversing();
   void  change_to_remove_doll();
-  void  change_to_allocate_doll();
+  void  change_to_allocate_human_doll();
+  void  change_to_allocate_horse_doll();
 
   std::pair<int,int>  get_numbers() const;
 

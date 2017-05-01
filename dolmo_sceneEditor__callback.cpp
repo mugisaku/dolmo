@@ -186,9 +186,17 @@ change_to_remove_doll()
 
 void
 SceneEditor::
-change_to_allocate_doll()
+change_to_allocate_human_doll()
 {
-  change_mode(Mode::allocate_doll);
+  change_mode(Mode::allocate_human_doll);
+}
+
+
+void
+SceneEditor::
+change_to_allocate_horse_doll()
+{
+  change_mode(Mode::allocate_horse_doll);
 }
 
 

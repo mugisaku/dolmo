@@ -13,8 +13,6 @@ Scene():
 copybuffer_frame(*this)
 {
   frame_list.emplace_back(*this);
-
-  allocate_doll(300,200);
 }
 
 
@@ -39,9 +37,9 @@ clear()
 
 Doll&
 Scene::
-allocate_doll(int  x, int  y)
+allocate_doll(const Node&  model, int  x, int  y)
 {
-  doll_list.emplace_back(*this,new Node(get_horse_model()),0);
+  doll_list.emplace_back(*this,new Node(model),0);
 
   auto&  bk = doll_list.back();
 
