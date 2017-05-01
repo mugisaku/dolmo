@@ -79,7 +79,7 @@ Node
   Rect  image_rect;//このノードが使用する描画元像画像領域
 
   Point  image_center;//描画元画像を回転処理するときの中心位置。値は、image_rectからの相対位置
-  Point  graph_center;//描画先画像の中心位置。値は、スクリーン上の絶対位置 -> マシンが計算する
+  Point  graph_center;//描画先画像の中心位置。値は、仮想スクリーン上の絶対位置 -> マシンが計算する
 
   Point  base_offset;//親ノードのgraph_centerからの相対位置
 
@@ -126,8 +126,8 @@ public:
 
   void  update(int  scale_level, bool  reversing);
 
-  void  render_image(Renderer&  dst, int  scale_level, bool  reversing);
-  void  render(Renderer&  dst, int  scale_level, bool  reversing, int  z_max);
+  void  render_image(Renderer&  dst, const Point&  dst_offset, int  scale_level, bool  reversing);
+  void  render(Renderer&  dst, const Point&  dst_offset, int  scale_level, bool  reversing, int  z_max);
 
   void  print() const;
 

@@ -315,7 +315,7 @@ update(int  scale_level, bool  reversing)
 
 void
 Node::
-render_image(Renderer&  dst, int  scale_level, bool  reversing)
+render_image(Renderer&  dst, const Point&  dst_offset, int  scale_level, bool  reversing)
 {
   const auto  dst_w = dst.get_width();
   const auto  dst_h = dst.get_height();
@@ -331,13 +331,7 @@ render_image(Renderer&  dst, int  scale_level, bool  reversing)
     }
 
 
-  Point  rendering_base = (graph_center-center);
-
-    {
-      rendering_base.x += get_scaled_value(rendering_base.x,scale_level);
-      rendering_base.y += get_scaled_value(rendering_base.y,scale_level);
-    }
-
+  const Point  rendering_base = (graph_center-center);
 
     for(int  y = -image_size;  y < rendering_size;  ++y)
     {
@@ -346,45 +340,37 @@ render_image(Renderer&  dst, int  scale_level, bool  reversing)
           int  dst_x = (rendering_base.x+x);
           int  dst_y = (rendering_base.y+y);
 
-            if((dst_x >= 0) &&
-               (dst_y >= 0))
+          Point  pt(x,y);
+
+          pt = pt.transform(reversed_sin_value,reversed_cos_value,center);
+
+            if((pt.x >=            0) &&
+               (pt.y >=            0) &&
+               (pt.x <  image_rect.w) &&
+               (pt.y <  image_rect.h))
             {
-              Point  pt(x,y);
+              int  i;
 
-              pt = pt.transform(reversed_sin_value,reversed_cos_value,center);
-
-                if((pt.x >=            0) &&
-                   (pt.y >=            0) &&
-                   (pt.x <  image_rect.w) &&
-                   (pt.y <  image_rect.h))
+                if(reversing)
                 {
-                  int  i;
+                  i = image::get(picture_index,image_rect.x+image_rect.w-1-pt.x,
+                                               image_rect.y+pt.y);
+                }
 
-                    if(reversing)
-                    {
-                      i = image::get(picture_index,image_rect.x+image_rect.w-1-pt.x,
-                                                   image_rect.y+pt.y);
-                    }
-
-                  else
-                    {
-                      i = image::get(picture_index,(image_rect.x+pt.x),
-                                                   (image_rect.y+pt.y));
-                    }
+              else
+                {
+                  i = image::get(picture_index,(image_rect.x+pt.x),
+                                               (image_rect.y+pt.y));
+                }
 
 
-                    if(i)
-                    {
-                      dst_x = get_scaled_value(dst_x,scale_level);
-                      dst_y = get_scaled_value(dst_y,scale_level);
+                if(i)
+                {
+                  dst_x = get_scaled_value(dst_x,scale_level);
+                  dst_y = get_scaled_value(dst_y,scale_level);
 
-//                        if((dst_x < dst_w) &&
-//                           (dst_y < dst_h))
-                        {
-                          dst.put(i,this,dst_x,
-                                         dst_y);
-                        }
-                    }
+                  dst.put(i,this,dst_offset.x+dst_x,
+                                 dst_offset.y+dst_y);
                 }
             }
         }
@@ -394,17 +380,17 @@ render_image(Renderer&  dst, int  scale_level, bool  reversing)
 
 void
 Node::
-render(Renderer&  dst, int  scale_level, bool  reversing, int  z_max)
+render(Renderer&  dst, const Point&  dst_offset, int  scale_level, bool  reversing, int  z_max)
 {
     if(z_value <= z_max)
     {
-      render_image(dst,scale_level,reversing);
+      render_image(dst,dst_offset,scale_level,reversing);
     }
 
 
     for(auto  child: children)
     {
-      child->render(dst,scale_level,reversing,z_max);
+      child->render(dst,dst_offset,scale_level,reversing,z_max);
     }
 }
 

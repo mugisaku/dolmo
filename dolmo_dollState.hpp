@@ -18,7 +18,7 @@ DollState
   Doll&   target;
   Frame&   frame;
 
-  Point  base_offset;
+  Point  offset;
 
   int  number_table[400];
 

@@ -20,6 +20,8 @@ Doll
 
   std::unique_ptr<Node>  root_node;
 
+  Point  offset;
+
   int  scale_level;
 
   bool  reverse_flag;
@@ -65,6 +67,8 @@ public:
   int  get_z_value() const;
 
   const Node&  get_root_node() const;
+
+  const Point&  get_offset() const{return offset;}
 
   void  change_position(const Point&  pt);
   void  add_to_position(const Point&  pt);

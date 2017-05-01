@@ -21,7 +21,7 @@ void
 DollState::
 load()
 {
-  base_offset = (*target).get_base_offset();
+  offset = target.get_offset();
 
   int*  p = number_table;
 
@@ -39,7 +39,7 @@ store() const
 {
     if(number_count)
     {
-      target.change_position(base_offset);
+      target.change_position(offset);
 
       const int*  p = number_table;
 
@@ -63,7 +63,7 @@ copy(const DollState&  src)
 
   number_count = src.number_count;
 
-  base_offset  =  src.base_offset;
+  offset       =  src.offset;
   scale_level  =  src.scale_level;
   z_value      =      src.z_value;
   reverse_flag = src.reverse_flag;
@@ -110,8 +110,8 @@ to_json() const
 {
   libjson::Object  obj;
 
-  obj.emplace_back(std::string("x"),libjson::Value(base_offset.x));
-  obj.emplace_back(std::string("y"),libjson::Value(base_offset.y));
+  obj.emplace_back(std::string("x"),libjson::Value(offset.x));
+  obj.emplace_back(std::string("y"),libjson::Value(offset.y));
   obj.emplace_back(std::string("z value"),libjson::Value(z_value));
   obj.emplace_back(std::string("reversing"),libjson::Value(reverse_flag));
 

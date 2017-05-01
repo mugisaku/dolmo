@@ -235,7 +235,7 @@ step()
             {
               auto  doll = current_node->get_doll();
 
-              current_node->change_angle(current_point,doll->get_scale_level());
+              current_node->change_angle(current_point-doll->get_offset(),doll->get_scale_level());
 
               doll->update();
 
@@ -258,7 +258,7 @@ step()
 
 	             auto  pt = current_point-current_node->get_graph_center();
 
-              doll->add_to_position(pt);
+              doll->change_position(pt);
 
               doll->update();
 

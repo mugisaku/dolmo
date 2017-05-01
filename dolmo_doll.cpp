@@ -103,7 +103,7 @@ void
 Doll::
 change_position(const Point&  pt)
 {
-  root_node->change_base_offset(pt);
+  offset = pt;
 }
 
 
@@ -111,7 +111,7 @@ void
 Doll::
 add_to_position(const Point&  pt)
 {
-  root_node->add_to_base_offset(pt);
+  offset += pt;
 }
 
 
@@ -147,7 +147,7 @@ void
 Doll::
 render(Renderer&  dst, int  z_max) const
 {
-  root_node->render(dst,scale_level,reverse_flag,z_max);
+  root_node->render(dst,offset,scale_level,reverse_flag,z_max);
 }
 
 
