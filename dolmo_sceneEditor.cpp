@@ -115,6 +115,38 @@ press(Renderer&  renderer, int  x, int  y)
     }
 
   else
+    if(mode == Mode::increase_scale_level)
+    {
+      current_node = renderer.get_cell(x,y).nodeptr;
+
+        if(current_node)
+        {
+          auto  doll = current_node->get_doll();
+
+          doll->increase_scale_level();
+          doll->update();
+
+          needed_to_redraw = true;
+        }
+    }
+
+  else
+    if(mode == Mode::decrease_scale_level)
+    {
+      current_node = renderer.get_cell(x,y).nodeptr;
+
+        if(current_node)
+        {
+          auto  doll = current_node->get_doll();
+
+          doll->decrease_scale_level();
+          doll->update();
+
+          needed_to_redraw = true;
+        }
+    }
+
+  else
     if(mode == Mode::switch_reversing)
     {
       current_node = renderer.get_cell(x,y).nodeptr;
@@ -201,9 +233,11 @@ step()
             if((current_point.x != previous_point.x) ||
                (current_point.y != previous_point.y))
             {
-              current_node->change_angle(current_point);
+              auto  doll = current_node->get_doll();
 
-              current_node->get_doll()->update();
+              current_node->change_angle(current_point,doll->get_scale_level());
+
+              doll->update();
 
               previous_point = current_point;
 
@@ -222,7 +256,7 @@ step()
             {
               auto  doll = current_node->get_doll();
 
-              auto  pt = current_point-current_node->get_graph_center();
+	             auto  pt = current_point-current_node->get_graph_center();
 
               doll->add_to_position(pt);
 

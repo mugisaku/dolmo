@@ -186,8 +186,6 @@ join(Node*  child)
 
   children.emplace_back(child);
 
-  child->update();
-
 
   return child;
 }
@@ -205,8 +203,6 @@ join(Node*  child, int  x, int  y, JoiningKind  jk)
 
   child->base_offset.assign(x,y);
 
-  child->update();
-
 
   return child;
 }
@@ -216,7 +212,7 @@ join(Node*  child, int  x, int  y, JoiningKind  jk)
 
 void
 Node::
-change_angle(const Point&  pt, JoiningKind  jk)
+change_angle(const Point&  pt, int  scale_level, JoiningKind  jk)
 {
     if(jk == JoiningKind::none)
     {
@@ -228,14 +224,14 @@ change_angle(const Point&  pt, JoiningKind  jk)
     {
         if(parent)
         {
-          parent->change_angle(pt,jk);
+          parent->change_angle(pt,scale_level,jk);
         }
     }
 
   else
     {
-      double  y = -pt.y+graph_center.y;
-      double  x =  pt.x-graph_center.x;
+      double  y = -pt.y+get_scaled_value(graph_center.y,scale_level);
+      double  x =  pt.x-get_scaled_value(graph_center.x,scale_level);
 
         if((x != 0.0) &&
            (y != 0.0))
@@ -273,7 +269,7 @@ change_angle(const Point&  pt, JoiningKind  jk)
 
 void
 Node::
-update(bool  reversing)
+update(int  scale_level, bool  reversing)
 {
     if(parent)
     {
@@ -312,14 +308,14 @@ update(bool  reversing)
 
     for(auto  child: children)
     {
-      child->update(reversing);
+      child->update(scale_level,reversing);
     }
 }
 
 
 void
 Node::
-render_image(Renderer&  dst, bool  reversing)
+render_image(Renderer&  dst, int  scale_level, bool  reversing)
 {
   const auto  dst_w = dst.get_width();
   const auto  dst_h = dst.get_height();
@@ -327,7 +323,21 @@ render_image(Renderer&  dst, bool  reversing)
   const int      image_size = std::max(image_rect.w,image_rect.h);
   const int  rendering_size = image_size*2;
 
-  const Point  rendering_base = (graph_center-image_center);
+  auto  center = image_center;
+
+    if(reversing)
+    {
+      center.x = image_rect.w-center.x;
+    }
+
+
+  Point  rendering_base = (graph_center-center);
+
+    {
+      rendering_base.x += get_scaled_value(rendering_base.x,scale_level);
+      rendering_base.y += get_scaled_value(rendering_base.y,scale_level);
+    }
+
 
     for(int  y = -image_size;  y < rendering_size;  ++y)
     {
@@ -336,14 +346,12 @@ render_image(Renderer&  dst, bool  reversing)
           int  dst_x = (rendering_base.x+x);
           int  dst_y = (rendering_base.y+y);
 
-            if((dst_x >=     0) &&
-               (dst_y >=     0) &&
-               (dst_x <  dst_w) &&
-               (dst_y <  dst_h))
+            if((dst_x >= 0) &&
+               (dst_y >= 0))
             {
               Point  pt(x,y);
 
-              pt = pt.transform(reversed_sin_value,reversed_cos_value,image_center);
+              pt = pt.transform(reversed_sin_value,reversed_cos_value,center);
 
                 if((pt.x >=            0) &&
                    (pt.y >=            0) &&
@@ -360,15 +368,22 @@ render_image(Renderer&  dst, bool  reversing)
 
                   else
                     {
-                      i = image::get(picture_index,image_rect.x+pt.x,
-                                                   image_rect.y+pt.y);
+                      i = image::get(picture_index,(image_rect.x+pt.x),
+                                                   (image_rect.y+pt.y));
                     }
 
 
                     if(i)
                     {
-                      dst.put(i,this,dst_x,
-                                     dst_y);
+                      dst_x = get_scaled_value(dst_x,scale_level);
+                      dst_y = get_scaled_value(dst_y,scale_level);
+
+//                        if((dst_x < dst_w) &&
+//                           (dst_y < dst_h))
+                        {
+                          dst.put(i,this,dst_x,
+                                         dst_y);
+                        }
                     }
                 }
             }
@@ -379,17 +394,17 @@ render_image(Renderer&  dst, bool  reversing)
 
 void
 Node::
-render(Renderer&  dst, bool  reversing, int  z_max)
+render(Renderer&  dst, int  scale_level, bool  reversing, int  z_max)
 {
     if(z_value <= z_max)
     {
-      render_image(dst,reversing);
+      render_image(dst,scale_level,reversing);
     }
 
 
     for(auto  child: children)
     {
-      child->render(dst,reversing,z_max);
+      child->render(dst,scale_level,reversing,z_max);
     }
 }
 

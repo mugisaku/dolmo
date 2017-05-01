@@ -19,6 +19,8 @@ public:
     remove_doll,
     move_position,
     move_angle,
+    increase_scale_level,
+    decrease_scale_level,
     switch_reversing,
     animation,
   };
@@ -70,6 +72,8 @@ public:
   void  change_to_remove_doll();
   void  change_to_allocate_human_doll();
   void  change_to_allocate_horse_doll();
+  void  change_to_increase_scale_level();
+  void  change_to_decrease_scale_level();
 
   std::pair<int,int>  get_numbers() const;
 

@@ -6,6 +6,7 @@
 Doll::
 Doll(Scene&  scene_, Node*  root, int  z, bool  rev):
 scene(scene_),
+scale_level(scale_level_max),
 reverse_flag(rev),
 z_value(z),
 root_node(root)
@@ -60,6 +61,28 @@ switch_reverse_flag()
 }
 
 
+void
+Doll::
+increase_scale_level()
+{
+    if(scale_level < scale_level_max)
+    {
+      ++scale_level;
+    }
+}
+
+
+void
+Doll::
+decrease_scale_level()
+{
+    if(scale_level > 1)
+    {
+      --scale_level;
+    }
+}
+
+
 int
 Doll::
 get_z_value() const
@@ -96,7 +119,7 @@ void
 Doll::
 update()
 {
-  root_node->update(reverse_flag);
+  root_node->update(scale_level,reverse_flag);
 }
 
 
@@ -124,7 +147,7 @@ void
 Doll::
 render(Renderer&  dst, int  z_max) const
 {
-  root_node->render(dst,reverse_flag,z_max);
+  root_node->render(dst,scale_level,reverse_flag,z_max);
 }
 
 

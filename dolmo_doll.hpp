@@ -20,6 +20,8 @@ Doll
 
   std::unique_ptr<Node>  root_node;
 
+  int  scale_level;
+
   bool  reverse_flag;
 
   int  z_value;
@@ -56,6 +58,10 @@ public:
 
   void  switch_reverse_flag();
 
+  void  increase_scale_level();
+  void  decrease_scale_level();
+
+  int  get_scale_level() const{return scale_level;}
   int  get_z_value() const;
 
   const Node&  get_root_node() const;

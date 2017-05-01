@@ -41,9 +41,7 @@ make_leg(Node*  waist, int  z)
 void
 make()
 {
-  auto  root = new Node(screen::width/2,screen::width/2-32);
-
-  auto  abdomen =    root->join(new Node("腹",2,0,Rect(u*2,0,u,u),Point(32,32)),0,56);
+  auto  abdomen = new Node("腹",2,0,Rect(u*2,0,u,u),Point(32,32));
   auto    waist = abdomen->join(new Node("腰",2,0,Rect(u*3,0,u,u),Point(32,32)),0,32);
   auto     bust = abdomen->join(new Node("胸",2,0,Rect(u*1,0,u,u),Point(32,56)),0, -8,JoiningKind::upward);
   auto     head =    bust->join(new Node("頭",2,0,Rect(u*0,0,u,u),Point(32,56)),0,-64,JoiningKind::upward);
@@ -56,7 +54,7 @@ make()
   make_leg(waist,3)->change_degree( 18);
   make_leg(waist,1)->change_degree(-18);
 
-  model = root;
+  model = abdomen;
 }
 
 

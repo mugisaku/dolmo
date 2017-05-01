@@ -186,6 +186,22 @@ change_to_remove_doll()
 
 void
 SceneEditor::
+change_to_increase_scale_level()
+{
+  change_mode(Mode::increase_scale_level);
+}
+
+
+void
+SceneEditor::
+change_to_decrease_scale_level()
+{
+  change_mode(Mode::decrease_scale_level);
+}
+
+
+void
+SceneEditor::
 change_to_allocate_human_doll()
 {
   change_mode(Mode::allocate_human_doll);

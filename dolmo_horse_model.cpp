@@ -44,9 +44,7 @@ make_hindleg(Node*  abdomen, int  z)
 void
 make()
 {
-  auto  root = new Node(screen::width/2,screen::width/2-32);
-
-  auto  abdomen = root->join(new Node("胴",2,1,Rect(160,0,160,h),Point(240-160,48)),0,0);
+  auto  abdomen = new Node("胴",2,1,Rect(160,0,160,h),Point(240-160,48));
 
   auto  neck = abdomen->join(new Node("頚",2,1,Rect(w*1,0,96,h),Point(138-64,58)),-44,-24,JoiningKind::to_left);
   auto  head =    neck->join(new Node("頭",2,1,Rect(w*0,0,w,h),Point(56,32)),-72,-32,JoiningKind::to_left);
@@ -57,7 +55,7 @@ make()
   make_hindleg(abdomen,3);
   make_hindleg(abdomen,1);
 
-  model = root;
+  model = abdomen;
 }
 
 

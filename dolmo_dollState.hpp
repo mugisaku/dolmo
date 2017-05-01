@@ -24,6 +24,8 @@ DollState
 
   size_t  number_count;
 
+  int  scale_level;
+
   bool  reverse_flag;
 
   int  z_value;

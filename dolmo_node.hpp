@@ -34,6 +34,29 @@ struct Doll;
 struct Renderer;
 
 
+constexpr int  scale_level_max = 8;
+
+
+constexpr int
+get_scaled_value(int  src, int  lv)
+{
+  constexpr int  shift_amount = 22;
+
+  return (((src<<shift_amount)/scale_level_max*lv)>>shift_amount);
+}
+
+
+constexpr int
+get_reverse_scaled_value(int  src, int  lv)
+{
+  constexpr int  shift_amount = 22;
+
+  return (((src<<shift_amount)/lv*scale_level_max)>>shift_amount);
+}
+
+
+
+
 class
 Node
 {
@@ -51,12 +74,12 @@ Node
   Node*                 parent;
   std::vector<Node*>  children;
 
-  int  picture_index;
+  int  picture_index;//このノードが使用する画像を指すインデックス
 
   Rect  image_rect;//このノードが使用する描画元像画像領域
 
   Point  image_center;//描画元画像を回転処理するときの中心位置。値は、image_rectからの相対位置
-  Point  graph_center;//描画先画像の中心位置。値は、スクリーン上の絶対位置
+  Point  graph_center;//描画先画像の中心位置。値は、スクリーン上の絶対位置 -> マシンが計算する
 
   Point  base_offset;//親ノードのgraph_centerからの相対位置
 
@@ -99,12 +122,12 @@ public:
   const Point&  get_base_offset() const;
   const Point&  get_graph_center() const;
 
-  void  change_angle(const Point&  pt, JoiningKind  jk=JoiningKind::none);
+  void  change_angle(const Point&  pt, int  scale_level, JoiningKind  jk=JoiningKind::none);
 
-  void  update(bool  reversing=false);
+  void  update(int  scale_level, bool  reversing);
 
-  void  render_image(Renderer&  dst, bool  reversing);
-  void  render(Renderer&  dst, bool  reversing, int  z_max);
+  void  render_image(Renderer&  dst, int  scale_level, bool  reversing);
+  void  render(Renderer&  dst, int  scale_level, bool  reversing, int  z_max);
 
   void  print() const;
 

@@ -27,6 +27,7 @@ load()
 
   number_count = (*target).write(p,std::end(number_table));
 
+  scale_level  = target.get_scale_level();
   reverse_flag = target.test_reverse_flag();
   z_value      = target.get_z_value();
 }
@@ -44,8 +45,9 @@ store() const
 
       (*target).read(p);
 
+      target.scale_level  =  scale_level;
       target.reverse_flag = reverse_flag;
-      target.z_value      =     z_value;
+      target.z_value      =      z_value;
 
 
       target.update();
@@ -61,8 +63,9 @@ copy(const DollState&  src)
 
   number_count = src.number_count;
 
-  base_offset  = src.base_offset;
-  z_value      = src.z_value;
+  base_offset  =  src.base_offset;
+  scale_level  =  src.scale_level;
+  z_value      =      src.z_value;
   reverse_flag = src.reverse_flag;
 }
 
